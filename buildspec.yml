@@ -1,0 +1,31 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      golang: 1.18
+    commands:
+        # AWS Codebuild Go images use /go for the $GOPATH so copy the src code into that dir structure
+      - echo INSTALL installing Go dependencies...
+      - mkdir -p "/go/src/$(dirname ${PACKAGE})"
+      - ln -s "${CODEBUILD_SRC_DIR}" "/go/src/${PACKAGE}"
+      # Print all environment variables (handy for AWS CodeBuild logs)
+      - echo Print all enviroment variables ...
+      - env
+      # Install Lambda Go
+  pre_build:
+    commands:
+      - echo PRE_BUILD installing source NPM dependencies...
+      - echo Make sure we're in the project directory within our GOPATH
+      - cd "/go/src/${PACKAGE}"
+      - echoFetch all dependencies
+      - go get -t ./...
+  build:
+    commands:
+      - echo Build our go application on `date`
+      - go build -o app ./cmd/server/main.go
+  post_build:
+      commands:
+      - echo POST_BUILD Updating lambda Function...
+      - echo BUILD completed on `date`  
+artifacts:
