@@ -20,8 +20,8 @@ phases:
 
   pre_build:
     commands:
-      - echo PRE_BUILD installing source dependencies...
-      - echo Make sure we are in the project directory within our GOPATH ...
+      - echo PRE_BUILD installing source dependencies on `date`
+      - echo Make sure we are in the project directory within our GOPATH 
       - cd "/go/src/${PACKAGE}"
       - echo Fetch all dependencies
       - go get -t ./...
@@ -31,7 +31,7 @@ phases:
       - go build -o app ./cmd/main.go
   post_build:
       commands:
-      - echo POST_BUILD Zipping go application on `date` ...
+      - echo POST_BUILD Zipping go application on `date`
       - zip -r -q ./main.zip .
 artifacts:
   files:
