@@ -13,10 +13,11 @@ phases:
       - echo INSTALL installing Go dependencies...
       - mkdir -p "/go/src/$(dirname ${PACKAGE})"
       - ln -s "${CODEBUILD_SRC_DIR}" "/go/src/${PACKAGE}"
+
       # Print all environment variables (handy for AWS CodeBuild logs)
       - echo Print all enviroment variables ...
       - env
-      # Install Lambda Go
+
   pre_build:
     commands:
       - echo PRE_BUILD installing source dependencies...
