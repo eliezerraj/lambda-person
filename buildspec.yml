@@ -28,7 +28,7 @@ phases:
   build:
     commands:
       - echo Build our go application on `date`
-      - go build -o app ./cmd/server/main.go
+      - go build -o app ./cmd/main.go
   post_build:
       commands:
       - echo POST_BUILD Updating lambda Function...
