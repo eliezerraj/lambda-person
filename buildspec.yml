@@ -31,5 +31,8 @@ phases:
       - go build -o app ./cmd/main.go
   post_build:
       commands:
-      - echo POST_BUILD Updating lambda Function...
-      - echo BUILD completed on `date`  
+      - echo POST_BUILD Zipping go application on `date` ...
+      - zip -r -q ./main.zip .
+artifacts:
+  files:
+    - main.zip
