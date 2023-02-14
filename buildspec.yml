@@ -28,4 +28,3 @@ phases:
       commands:
       - echo POST_BUILD Updating lambda Function...
       - echo BUILD completed on `date`  
-artifacts:
