@@ -49,6 +49,8 @@ func handler(req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse
 				response, _ = personHandler.ListPerson()
 			}else if (req.Resource == "/person/{id}"){
 				response, _ = personHandler.GetPerson(req)
+			}else if (req.Resource == "/version"){
+				response, _ = personHandler.GetVersion()
 			}else {
 				response, _ = personHandler.UnhandledMethod()
 			}

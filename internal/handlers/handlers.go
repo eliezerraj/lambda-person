@@ -15,12 +15,18 @@ import(
 
 )
 
+var version = "version 1.0"
+
 type PersonHandler struct {
 	personService services.PersonService
 }
 
 type ErrorBody struct {
 	ErrorMsg *string `json:"error,omitempty"`
+}
+
+type MessageBody struct {
+	Msg *string `json:"omitempty"`
 }
 
 func (h *PersonHandler) UnhandledMethod() (*events.APIGatewayProxyResponse, error){
@@ -61,7 +67,6 @@ func (h *PersonHandler) AddPerson(req events.APIGatewayProxyRequest) (*events.AP
 func (h *PersonHandler) UpdatePerson(req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
 	log.Printf("+++++++++++++++++++++++++++++++++")
 	log.Printf("- handlers.UpdatePerson -")
-
 	//person := domain.NewPerson("333","mahone champion","M")
 	
 	var person domain.Person
@@ -135,6 +140,20 @@ func (h *PersonHandler) ListPerson() (*events.APIGatewayProxyResponse, error) {
 		return ApiHandlerResponse(http.StatusBadRequest, ErrorBody{aws.String(err.Error())})
 	}
 	log.Printf("- handlers.ListPerson - handlerResponse :", handlerResponse)
+
+	return handlerResponse, nil
+}
+
+func (h *PersonHandler) GetVersion() (*events.APIGatewayProxyResponse, error) {
+	log.Printf("+++++++++++++++++++++++++++++++++")
+	log.Printf("- handlers.GetVersion -")
+
+	response := MessageBody { Msg: &version }
+	handlerResponse, err := ApiHandlerResponse(http.StatusOK, response)
+	if err != nil {
+		return ApiHandlerResponse(http.StatusBadRequest, ErrorBody{aws.String(err.Error())})
+	}
+	log.Printf("- handlers.GetVersion - handlerResponse :", handlerResponse)
 
 	return handlerResponse, nil
 }
