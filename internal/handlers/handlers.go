@@ -26,7 +26,7 @@ type ErrorBody struct {
 }
 
 type MessageBody struct {
-	Msg *string `json:"omitempty"`
+	Msg *string `json:"message:omitempty"`
 }
 
 func (h *PersonHandler) UnhandledMethod() (*events.APIGatewayProxyResponse, error){
