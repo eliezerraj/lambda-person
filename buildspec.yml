@@ -29,8 +29,8 @@ phases:
   build:
     commands:
       - echo Build our go application on `date`
-      - go build -o app ./cmd/main.go
-      
+      - go build -o main ./cmd/main.go
+
   post_build:
       commands:
       - echo POST_BUILD Zipping go application on `date`
