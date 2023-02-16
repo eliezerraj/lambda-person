@@ -1,0 +1,21 @@
+version: 0.2 
+phases: 
+  install: 
+    runtime-versions: 
+      nodejs: 16 
+  pre_build: 
+    commands: 
+      - echo PRE_BUILD no tasks... 
+  build: 
+    commands: 
+      - echo PRE_BUILD no tasks... 
+  post_build: 
+      commands: 
+      - echo POST_BUILD Updating lambda Function... 
+
+      # Account account-a
+      #- aws lambda update-function-code --function-name lambda-new-authorizer --s3-bucket account-a-884069944685-codedeploy-artfacts --s3-key lambda-new-authorizer.zip/lambda-new-authorizer.zip
+      
+      # Account account-a
+      - aws lambda update-function-code --function-name lambda-person --s3-bucket eliezerraj-908671954593-codepipeline --s3-key lambda-person/main.zip
+      - echo POST_BUILD completed on `date`
