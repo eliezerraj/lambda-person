@@ -21,7 +21,7 @@ var (
   )
 
 func main(){
-	fmt.Println("Main Person (GO) v.1")
+	fmt.Println("Main Person (GO) v 2.0")
 	
 	personRepository, err := repository.NewPersonRepository(tableName)
 	if err != nil {
