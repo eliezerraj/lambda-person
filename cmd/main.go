@@ -67,9 +67,7 @@ func handler(req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse
 				response, _ = personHandler.UnhandledMethod()
 			}
 		case "DELETE":
-			if (req.Resource == "/person/{id}/{sk}"){
-				personHandler.DeletePerson(req)
-			}
+			response, _ =personHandler.DeletePerson(req)
 		case "PUT":
 			response, _ = personHandler.UpdatePerson(req)
 		default:

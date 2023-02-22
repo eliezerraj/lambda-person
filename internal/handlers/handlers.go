@@ -16,6 +16,7 @@ import(
 )
 
 var version = "version 2.0"
+var transactionSuccess	= "Transação com sucesso"
 
 type PersonHandler struct {
 	personService services.PersonService
@@ -121,8 +122,13 @@ func (h *PersonHandler) DeletePerson(req events.APIGatewayProxyRequest) (*events
 	if err != nil {
 		return ApiHandlerResponse(http.StatusBadRequest, ErrorBody{aws.String(err.Error())})
 	}
-
-	return ApiHandlerResponse(http.StatusOK, nil)
+	response := MessageBody { Msg: &transactionSuccess }
+	handlerResponse, err := ApiHandlerResponse(http.StatusOK, response)
+	if err != nil {
+		return ApiHandlerResponse(http.StatusBadRequest, ErrorBody{aws.String(err.Error())})
+	}
+ 	log.Printf("- handlers.DeletePerson - handlerResponse :", handlerResponse)
+	return handlerResponse, nil
 }
 
 func (h *PersonHandler) ListPerson() (*events.APIGatewayProxyResponse, error) {
