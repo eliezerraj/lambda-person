@@ -26,6 +26,10 @@ var (
 	listAdresses2 = []domain.Address{*adress201, *adress202, *adress203}
 	personAddress2 = domain.NewPersonAddress(*person2, listAdresses2)
 
+	person99 = domain.NewPerson("PERSON-999","PERSON-999","Mr Delete ME","M")
+	adress99 = domain.NewAddress("ADDRESS-99","ADDRESS-99","St nini nine",1,"zip-99")
+	listAdresses99 = []domain.Address{*adress99}
+	personAddress99 = domain.NewPersonAddress(*person99, listAdresses99)
 )
 
 func TestSum(t *testing.T) {
@@ -39,7 +43,7 @@ func TestAddPerson(t *testing.T) {
 	t.Setenv("AWS_REGION", "us-east-2")
 	personRepository, err := repository.NewPersonRepository(tableName)
 	if err != nil {
-		t.Errorf("Error Create Repository DynanoDB")
+		t.Errorf("Error - TestAddPerson Create Repository DynanoDB")
 	}
 
 	personService	:= NewPersonService(*personRepository)
@@ -105,24 +109,45 @@ func TestGetPerson(t *testing.T) {
 	}
 
 }
-/*
+
+func TestAddPersonDelete(t *testing.T) {
+	t.Setenv("AWS_REGION", "us-east-2")
+	personRepository, err := repository.NewPersonRepository(tableName)
+	if err != nil {
+		t.Errorf("Error - TestAddPersonDelete Create Repository DynanoDB")
+	}
+
+	personService	:= NewPersonService(*personRepository)
+	
+    result, err := personService.AddPerson(*person99)
+	if err != nil {
+		t.Errorf("Error -TestAddPersonDelete Access DynanoDB %v ", tableName)
+	}
+
+	if (cmp.Equal(person99, result)) {
+		t.Logf("Success on TestAddPersonDelete!!! result : %v ", result)
+	} else {
+		t.Errorf("Error TestAddPersonDelete input : %v" , person99)
+	}
+}
+
 func TestDeletePerson(t *testing.T) {
 
 	t.Setenv("AWS_REGION", "us-east-2")
 	personRepository, err := repository.NewPersonRepository(tableName)
 	if err != nil {
-		t.Errorf("Error Create Repository DynanoDB")
+		t.Errorf("Error - TestDeletePerson Create Repository DynanoDB")
 	}
 
 	personService	:= NewPersonService(*personRepository)
 	
-    err = personService.DeletePerson(person.ID)
+    err = personService.DeletePerson(person99.ID, person99.SK)
 	if err != nil {
-		t.Errorf("Error Access DynanoDB %v ", tableName)
+		t.Errorf("Error - TestDeletePerson DynanoDB %v ", tableName)
 	}
 
-	t.Logf("Success !!!")
-}*/
+	t.Logf("Success TestDeletePerson input : %s %s", person99.ID, person99.SK)
+}
 
 func TestAddPersonAddress(t *testing.T) {
 	t.Setenv("AWS_REGION", "us-east-2")

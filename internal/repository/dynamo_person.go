@@ -12,7 +12,7 @@ import(
 
 )
 
-func (r *PersonRepository) DeletePerson(id string) (error) {
+func (r *PersonRepository) DeletePerson(id string, sk string) (error) {
 	log.Printf("+++++++++++++++++++++++++++++++++")
 	log.Printf("- repository.DeletePerson - id : ", id)
 
@@ -20,6 +20,9 @@ func (r *PersonRepository) DeletePerson(id string) (error) {
 		Key: map[string]*dynamodb.AttributeValue{
 			"id": {
 				S: aws.String(id),
+			},
+			"sk": {
+				S: aws.String(sk),
 			},
 		},
 		TableName: r.tableName,

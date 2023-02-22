@@ -112,11 +112,12 @@ func (h *PersonHandler) DeletePerson(req events.APIGatewayProxyRequest) (*events
 	log.Printf("- handlers.DeletePerson -")
 
 	id := req.PathParameters["id"]
-	if len(id) == 0 {
+	sk := req.PathParameters["sk"]
+	if len(id) == 0 || len(sk) == 0 {
 		return ApiHandlerResponse(http.StatusBadRequest, ErrorBody{aws.String(erro.ErrQueryEmpty.Error())})
 	}
 	
-	err := h.personService.DeletePerson(id)
+	err := h.personService.DeletePerson(id, sk)
 	if err != nil {
 		return ApiHandlerResponse(http.StatusBadRequest, ErrorBody{aws.String(err.Error())})
 	}
@@ -202,6 +203,7 @@ func (h *PersonHandler) GetPersonAddress(req events.APIGatewayProxyRequest) (*ev
 func (h *PersonHandler) AddPersonAddress(req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
 	log.Printf("+++++++++++++++++++++++++++++++++")
 	log.Printf("- handlers.AddPersonAddress -")
+	log.Printf("- req.Body -" , req.Body)
 
     var personAddress domain.PersonAddress
     if err := json.Unmarshal([]byte(req.Body), &personAddress); err != nil {

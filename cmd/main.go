@@ -13,7 +13,7 @@ import(
 )
 
 var (
-	tableName = "person"
+	tableName = "person_tenant"
 	response 			*events.APIGatewayProxyResponse
 	personRepository	*repository.PersonRepository
 	personService 		*services.PersonService
@@ -62,12 +62,14 @@ func handler(req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse
 			if (req.Resource == "/person"){
 				response, _ = personHandler.AddPerson(req)
 			} else if (req.Resource == "/personaddress") {
-				response, _ = personHandler.AddPerson(req)
+				response, _ = personHandler.AddPersonAddress(req)
 			}else {
 				response, _ = personHandler.UnhandledMethod()
 			}
 		case "DELETE":
-			personHandler.DeletePerson(req)
+			if (req.Resource == "/person/{id}/{sk}"){
+				personHandler.DeletePerson(req)
+			}
 		case "PUT":
 			response, _ = personHandler.UpdatePerson(req)
 		default:
