@@ -264,15 +264,11 @@ func TestAddPersonAddressNotFound(t *testing.T) {
 	personService	:= NewPersonService(*personRepository)
 	personAddress := domain.PersonAddress{*person99, listAdresses99}
 	
-    result, err := personService.AddPersonAddress(personAddress)
+    _, err = personService.AddPersonAddress(personAddress)
 	if err != nil {
-		t.Errorf("Error - TestAddPersonAddressNotFound Access DynanoDB %v ", tableName)
-	}
-
-	if (cmp.Equal(&personAddress, result)) {
-		t.Logf("Success TestAddPersonAddressNotFound result : %v ", result)
+		t.Logf("Success Item not Found result : %v ", err)
 	} else {
-		t.Errorf("Error NOT EQUAL TestAddPersonAddressNotFound input : %v ",&personAddress1)
+		t.Errorf("Error - TestAddPersonAddressNotFound Item Found %v ", err)
 	}
 
 }
