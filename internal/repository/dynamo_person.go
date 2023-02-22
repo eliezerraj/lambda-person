@@ -85,7 +85,6 @@ func (r *PersonRepository) ListPerson() (*[]domain.Person, error){
 		return nil, erro.ErrPreparedQuery
 	}
 
-
 	key := &dynamodb.ScanInput{
 		TableName:                 	r.tableName,
 		ExpressionAttributeNames:  	expr.Names(),
