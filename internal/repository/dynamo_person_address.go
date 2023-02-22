@@ -17,23 +17,22 @@ type PersonAddressRecord struct {
     Address domain.Address  `json:"address,omitempty"`
 }
 
-func (r *PersonRepository) AddPersonAddress(person domain.Person, adresses []domain.Address) (*domain.PersonAddress, error){
+func (r *PersonRepository) AddPersonAddress(personAddress domain.PersonAddress) (*domain.PersonAddress, error){
 	log.Printf("+++++++++++++++++++++++++++++++++")
-	//log.Printf("- repository.AddPersonAddress - person : ", person)
+	log.Printf("- repository.AddPersonAddress - personAddress : ", personAddress)
 	//log.Printf("- repository.AddPersonAddress - adresses : ", adresses)
 
-	for _, item_address := range adresses {
+	for _, item_address := range personAddress.Addresses {
 
 		concat_sk := fmt.Sprintf("ADDRESS:%s", item_address.ID)
 
 		item_to_marshall := PersonAddressRecord{
-			ID: person.ID,
+			ID: personAddress.Person.ID,
 			SK: concat_sk,
 
 			Address: item_address,
 		}
-		//log.Printf("- repository.AddPerson - item_to_marshall : ", item_to_marshall)
-		
+
 		item, err := dynamodbattribute.MarshalMap(item_to_marshall)
 		if err != nil {
 			log.Print("erro :", err) 
@@ -59,9 +58,6 @@ func (r *PersonRepository) AddPersonAddress(person domain.Person, adresses []dom
 		}
 	}
 
-	personAddress := domain.PersonAddress{person, adresses}
-	//log.Printf("- repository.AddPersonAddress - personAddress : ", personAddress)
-
 	return &personAddress , nil
 }
 
@@ -81,18 +77,29 @@ func (r *PersonRepository) ListPersonAddress() (*[]domain.PersonAddress, error){
 	log.Printf("result => ", result)
 
 	personAddress := []domain.PersonAddress{}
-	
-	return &personAddress, nil
+	personAddressRecord := PersonAddressRecord{}
+	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, &personAddressRecord)
+    if err != nil {
+		log.Printf("erro :", err) 
+		return nil, erro.ErrUnmarshal
+    }
+
+	log.Printf("personAddressRecord => ", personAddressRecord)
+	if len(personAddress) == 0 {
+		return nil, erro.ErrNotFound
+	} else {
+		return &personAddress, nil
+	}
 }
 
-func (r *PersonRepository) QueryPersonAddress(person domain.Person) (*[]domain.PersonAddress, error){
+func (r *PersonRepository) QueryPersonAddress(id string) (*domain.PersonAddress, error){
 	log.Printf("+++++++++++++++++++++++++++++++++")
 	log.Printf("- repository.QueryPersonAddress -")
 
 	var keyCond expression.KeyConditionBuilder
 	sk := "ADDRESS"
 	keyCond = expression.KeyAnd(
-		expression.Key("id").Equal(expression.Value(person.ID)),
+		expression.Key("id").Equal(expression.Value(id)),
 		expression.Key("sk").BeginsWith(sk),
 	)
 
@@ -115,9 +122,29 @@ func (r *PersonRepository) QueryPersonAddress(person domain.Person) (*[]domain.P
 		log.Printf("Erro(ErrList):", err) 
 		return nil, erro.ErrList
 	}
-	log.Printf("result => ", result)
+	//log.Printf("result => ", result)
 
-	personAddress := []domain.PersonAddress{}
-	
-	return &personAddress, nil
+	personAddressRecord := []PersonAddressRecord{}
+	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, &personAddressRecord)
+    if err != nil {
+		log.Printf("erro :", err) 
+		return nil, erro.ErrUnmarshal
+    }
+	//log.Printf("personAddressRecord => ", personAddressRecord)
+
+	listAdresses := []domain.Address{}
+	person := domain.Person{}
+	for _, result_personAddressRecord := range personAddressRecord{
+		person.ID = result_personAddressRecord.ID
+		address := domain.NewAddress(result_personAddressRecord.Address.ID,
+									result_personAddressRecord.Address.SK,
+									result_personAddressRecord.Address.Street,
+									result_personAddressRecord.Address.StreetNumber,
+									result_personAddressRecord.Address.ZipCode)
+		
+		listAdresses = append(listAdresses, *address)	
+	}
+
+	personAddress := domain.NewPersonAddress(person, listAdresses)
+	return personAddress, nil
 }

@@ -7,12 +7,11 @@ import(
 
 )
 
-func (s *PersonService) AddPersonAddress(person domain.Person, adresses []domain.Address ) (*domain.PersonAddress, error) {
+func (s *PersonService) AddPersonAddress(personAddress domain.PersonAddress) (*domain.PersonAddress, error) {
 	log.Printf("+++++++++++++++++++++++++++++++++")
-	log.Print("- services.AddPersonAddress - person   : ", person)
-	log.Print("- services.AddPersonAddress - adresses: ", adresses)
+	log.Print("- services.AddPersonAddress - personAddress   : ", personAddress)
 
-	p, err := s.personRepository.AddPersonAddress(person, adresses)
+	p, err := s.personRepository.AddPersonAddress(personAddress)
 	if err != nil {
 		return nil, err
 	}
@@ -30,11 +29,11 @@ func (s *PersonService) ListPersonAddress() (*[]domain.PersonAddress, error) {
 	return p, nil
 }
 
-func (s *PersonService) QueryPersonAddress(person domain.Person) (*[]domain.PersonAddress, error) {
+func (s *PersonService) QueryPersonAddress(id string) (*domain.PersonAddress, error) {
 	log.Printf("+++++++++++++++++++++++++++++++++")
 	log.Print("- services.QueryPersonAddress")
 
-	p, err := s.personRepository.QueryPersonAddress(person)
+	p, err := s.personRepository.QueryPersonAddress(id)
 	if err != nil {
 		return nil, err
 	}

@@ -47,15 +47,25 @@ func handler(req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse
 		case "GET":
 			if (req.Resource == "/person/list"){
 				response, _ = personHandler.ListPerson()
+			}else if (req.Resource == "/personaddress/list"){
+				response, _ = personHandler.ListPersonAddress()
 			}else if (req.Resource == "/person/{id}"){
 				response, _ = personHandler.GetPerson(req)
+			}else if (req.Resource == "/personaddress/{id}"){
+				response, _ = personHandler.GetPersonAddress(req)
 			}else if (req.Resource == "/version"){
 				response, _ = personHandler.GetVersion()
 			}else {
 				response, _ = personHandler.UnhandledMethod()
 			}
 		case "POST":
-			response, _ = personHandler.AddPerson(req)
+			if (req.Resource == "/person"){
+				response, _ = personHandler.AddPerson(req)
+			} else if (req.Resource == "/personaddress") {
+				response, _ = personHandler.AddPerson(req)
+			}else {
+				response, _ = personHandler.UnhandledMethod()
+			}
 		case "DELETE":
 			personHandler.DeletePerson(req)
 		case "PUT":

@@ -15,7 +15,7 @@ import(
 
 )
 
-var version = "version 1.0"
+var version = "version 2.0"
 
 type PersonHandler struct {
 	personService services.PersonService
@@ -46,7 +46,6 @@ func (h *PersonHandler) AddPerson(req events.APIGatewayProxyRequest) (*events.AP
 	log.Printf("+++++++++++++++++++++++++++++++++")
 	log.Printf("- handlers.AddPerson -")
 
-	//person := domain.NewPerson("333","mahone","M")
     var person domain.Person
     if err := json.Unmarshal([]byte(req.Body), &person); err != nil {
         return ApiHandlerResponse(http.StatusBadRequest, ErrorBody{aws.String(err.Error())})
@@ -67,8 +66,7 @@ func (h *PersonHandler) AddPerson(req events.APIGatewayProxyRequest) (*events.AP
 func (h *PersonHandler) UpdatePerson(req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
 	log.Printf("+++++++++++++++++++++++++++++++++")
 	log.Printf("- handlers.UpdatePerson -")
-	//person := domain.NewPerson("333","mahone champion","M")
-	
+
 	var person domain.Person
     if err := json.Unmarshal([]byte(req.Body), &person); err != nil {
         return ApiHandlerResponse(http.StatusBadRequest, ErrorBody{aws.String(err.Error())})
@@ -104,7 +102,7 @@ func (h *PersonHandler) GetPerson(req events.APIGatewayProxyRequest) (*events.AP
 	if err != nil {
 		return ApiHandlerResponse(http.StatusBadRequest, ErrorBody{aws.String(err.Error())})
 	}
-	log.Printf("- handlers.GetPerson - handlerResponse :", handlerResponse)
+	//log.Printf("- handlers.GetPerson - handlerResponse :", handlerResponse)
 
 	return handlerResponse, nil
 }
@@ -139,7 +137,7 @@ func (h *PersonHandler) ListPerson() (*events.APIGatewayProxyResponse, error) {
 	if err != nil {
 		return ApiHandlerResponse(http.StatusBadRequest, ErrorBody{aws.String(err.Error())})
 	}
-	log.Printf("- handlers.ListPerson - handlerResponse :", handlerResponse)
+	//log.Printf("- handlers.ListPerson - handlerResponse :", handlerResponse)
 
 	return handlerResponse, nil
 }
@@ -153,7 +151,71 @@ func (h *PersonHandler) GetVersion() (*events.APIGatewayProxyResponse, error) {
 	if err != nil {
 		return ApiHandlerResponse(http.StatusBadRequest, ErrorBody{aws.String(err.Error())})
 	}
-	log.Printf("- handlers.GetVersion - handlerResponse :", handlerResponse)
+	//log.Printf("- handlers.GetVersion - handlerResponse :", handlerResponse)
 
+	return handlerResponse, nil
+}
+
+//------------------------------------------
+
+func (h *PersonHandler) ListPersonAddress() (*events.APIGatewayProxyResponse, error) {
+	log.Printf("+++++++++++++++++++++++++++++++++")
+	log.Printf("- handlers.ListPersonAddress -")
+
+	response, err := h.personService.ListPersonAddress()
+	if err != nil {
+		return ApiHandlerResponse(http.StatusBadRequest, ErrorBody{aws.String(err.Error())})
+	}
+
+	handlerResponse, err := ApiHandlerResponse(http.StatusOK, response)
+	if err != nil {
+		return ApiHandlerResponse(http.StatusBadRequest, ErrorBody{aws.String(err.Error())})
+	}
+	//log.Printf("- handlers.ListPerson - handlerResponse :", handlerResponse)
+
+	return handlerResponse, nil
+}
+
+func (h *PersonHandler) GetPersonAddress(req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
+	log.Printf("+++++++++++++++++++++++++++++++++")
+	log.Printf("- handlers.GetPersonAddress -")
+
+	id := req.PathParameters["id"]
+	if len(id) == 0 {
+		return ApiHandlerResponse(http.StatusBadRequest, ErrorBody{aws.String(erro.ErrQueryEmpty.Error())})
+	}
+
+	response, err := h.personService.QueryPersonAddress(id)
+	if err != nil {
+		return ApiHandlerResponse(http.StatusBadRequest, ErrorBody{aws.String(err.Error())})
+	}
+
+	handlerResponse, err := ApiHandlerResponse(http.StatusOK, response)
+	if err != nil {
+		return ApiHandlerResponse(http.StatusBadRequest, ErrorBody{aws.String(err.Error())})
+	}
+	//log.Printf("- handlers.GetPersonAddress - handlerResponse :", handlerResponse)
+
+	return handlerResponse, nil
+}
+
+func (h *PersonHandler) AddPersonAddress(req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
+	log.Printf("+++++++++++++++++++++++++++++++++")
+	log.Printf("- handlers.AddPersonAddress -")
+
+    var personAddress domain.PersonAddress
+    if err := json.Unmarshal([]byte(req.Body), &personAddress); err != nil {
+        return ApiHandlerResponse(http.StatusBadRequest, ErrorBody{aws.String(err.Error())})
+    }
+
+	response, err := h.personService.AddPersonAddress(personAddress)
+	if err != nil {
+		return ApiHandlerResponse(http.StatusBadRequest, ErrorBody{aws.String(err.Error())})
+	}
+
+	handlerResponse, err := ApiHandlerResponse(http.StatusOK, response)
+	if err != nil {
+		return ApiHandlerResponse(http.StatusBadRequest, ErrorBody{aws.String(err.Error())})
+	}
 	return handlerResponse, nil
 }

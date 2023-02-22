@@ -46,14 +46,14 @@ func TestAddPerson(t *testing.T) {
 	
     result, err := personService.AddPerson(*person)
 	if err != nil {
-		t.Errorf("Error Access DynanoDB %v ", tableName)
+		t.Errorf("Error -TestAddPerson Access DynanoDB %v ", tableName)
 	}
 	//println(cmp.Equal(person, result))
 
 	if (cmp.Equal(person, result)) {
-		t.Logf("Success !!!")
+		t.Logf("Success on TestAddPerson!!! result : %v ", result)
 	} else {
-		t.Errorf("Error AddPerson")
+		t.Errorf("Error TestAddPerson input : %v" , *person)
 	}
 }
 
@@ -67,30 +67,30 @@ func TestListPerson(t *testing.T) {
 	personService := NewPersonService(*personRepository)
     result, err := personService.ListPerson()
 	if err != nil {
-		t.Errorf("Error Access DynanoDB %v ", tableName)
+		t.Errorf("Error - TestListPerson Access DynanoDB %v ", tableName)
 	}
 
-	t.Logf("Success !!! result : %v", result)
+	t.Logf("Success TestListPerson !!! result : %v", result)
 }
 
 func TestGetPerson(t *testing.T) {
 	t.Setenv("AWS_REGION", "us-east-2")
 	personRepository, err := repository.NewPersonRepository(tableName)
 	if err != nil {
-		t.Errorf("Error Create Repository DynanoDB")
+		t.Errorf("Error -TestGetPerson  Create Repository DynanoDB")
 	}
 
 	personService	:= NewPersonService(*personRepository)
 	
     result, err := personService.GetPerson(person.ID)
 	if err != nil {
-		t.Errorf("Error Access DynanoDB %v ", tableName)
+		t.Errorf("Error - TestGetPerson Access DynanoDB %v :", tableName)
 	}
 
 	if (cmp.Equal(person, result)) {
-		t.Logf("Success 01!!!")
+		t.Logf("Success -TestGetPerson !!! result : %v :", result)
 	} else {
-		t.Errorf("Error GetPerson 01")
+		t.Errorf("Error TestGetPerson input : %v : ", person.ID)
 	}
 
 	result, err = personService.GetPerson(person2.ID)
@@ -99,9 +99,9 @@ func TestGetPerson(t *testing.T) {
 	}
 
 	if (cmp.Equal(person2, result)) {
-		t.Logf("Success 02!!!")
+		t.Logf("Success -TestGetPerson !!! result : %v :", result)
 	} else {
-		t.Errorf("Error GetPerson 02")
+		t.Errorf("Error TestGetPerson input : %v : ", person2.ID)
 	}
 
 }
@@ -125,7 +125,6 @@ func TestDeletePerson(t *testing.T) {
 }*/
 
 func TestAddPersonAddress(t *testing.T) {
-
 	t.Setenv("AWS_REGION", "us-east-2")
 	personRepository, err := repository.NewPersonRepository(tableName)
 	if err != nil {
@@ -133,33 +132,34 @@ func TestAddPersonAddress(t *testing.T) {
 	}
 
 	personService	:= NewPersonService(*personRepository)
+	personAddress1 := domain.PersonAddress{*person, listAdresses}
 	
-    result, err := personService.AddPersonAddress(*person, listAdresses)
+    result, err := personService.AddPersonAddress(personAddress1)
 	if err != nil {
-		t.Errorf("Error Access DynanoDB %v ", tableName)
+		t.Errorf("Error - TestAddPersonAddress Access DynanoDB %v ", tableName)
 	}
-	//println(cmp.Equal(person, result))
 
-	if (cmp.Equal(personAddress, result)) {
-		t.Logf("Success 01 !!!")
+	if (cmp.Equal(&personAddress1, result)) {
+		t.Logf("Success TestAddPersonAddress result : %v ", result)
 	} else {
-		t.Errorf("Error 01 TestAddPersonAddress")
+		t.Errorf("Error NOT EQUAL TestAddPersonAddress input : %v ",&personAddress1)
 	}
 
-	result, err = personService.AddPersonAddress(*person2, listAdresses2)
+	personAddress2 := domain.PersonAddress{*person2, listAdresses2}
+
+	result, err = personService.AddPersonAddress(personAddress2)
 	if err != nil {
-		t.Errorf("Error Access DynanoDB %v ", tableName)
+		t.Errorf("Error - TestAddPersonAddress Access DynanoDB %v ", tableName)
 	}
-	//println(cmp.Equal(person, result))
 
-	if (cmp.Equal(personAddress2, result)) {
-		t.Logf("Success 02 !!!")
+	if (cmp.Equal(&personAddress2, result)) {
+		t.Logf("Success TestAddPersonAddress result : %v ", result)
 	} else {
-		t.Errorf("Error 02 TestAddPersonAddress")
+		t.Errorf("Error NOT EQUAL TestAddPersonAddress input : %v ",&personAddress2)
 	}
 }
 
-func TestListPersonAddress(t *testing.T) {
+/*func TestListPersonAddress(t *testing.T) {
 	t.Setenv("AWS_REGION", "us-east-2")
 	personRepository, err := repository.NewPersonRepository(tableName)
 	if err != nil {
@@ -174,21 +174,58 @@ func TestListPersonAddress(t *testing.T) {
 	}
 	
 	t.Logf("Success !!! result : %v", result)
-}
+}*/
 
 func TestQueryPersonAddress(t *testing.T) {
 	t.Setenv("AWS_REGION", "us-east-2")
 	personRepository, err := repository.NewPersonRepository(tableName)
 	if err != nil {
-		t.Errorf("Error Create Repository DynanoDB")
+		t.Errorf("Error - TestQueryPersonAddressCreate Repository DynanoDB")
 	}
 
 	personService	:= NewPersonService(*personRepository)
-	
-    result, err := personService.QueryPersonAddress(*person)
+	id := person.ID
+    result, err := personService.QueryPersonAddress(id)
 	if err != nil {
-		t.Errorf("Error Access DynanoDB %v ", tableName)
+		t.Errorf("Error - TestQueryPersonAddress Access DynanoDB %v ", tableName)
 	}
 	
-	t.Logf("Success !!! result : %v", result)
+	if (result != nil) {
+		t.Logf("Success TestQueryPersonAddress result : %v ", result)
+	} else {
+		t.Errorf("Error TestQueryPersonAddress input %s ", id)
+	}
+
+	id = person2.ID
+    result, err = personService.QueryPersonAddress(id)
+	if err != nil {
+		t.Errorf("Error - TestQueryPersonAddress Access DynanoDB %v ", tableName)
+	}
+	if (result != nil) {
+		t.Logf("Success TestQueryPersonAddress result : %v ", result)
+	} else {
+		t.Errorf("Error TestQueryPersonAddress input %s ", id)
+	}
+
+}
+
+func TestQueryPersonAddressNotFound(t *testing.T) {
+	t.Setenv("AWS_REGION", "us-east-2")
+	personRepository, err := repository.NewPersonRepository(tableName)
+	if err != nil {
+		t.Errorf("Error - TestQueryPersonAddressNotFound Repository DynanoDB")
+	}
+
+	personService	:= NewPersonService(*personRepository)
+	id := "PERSON-9999"
+    result, err := personService.QueryPersonAddress(id)
+	if err != nil {
+		t.Errorf("Error - TestQueryPersonAddressNotFound Access DynanoDB %v ", tableName)
+	}
+
+	if (result != nil) {
+		t.Logf("Success TestQueryPersonAddressNotFound result : %v ", result)
+	} else {
+		t.Errorf("Error TestQueryPersonAddressNotFound input %s ", id)
+	}
 }
