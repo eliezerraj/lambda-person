@@ -50,8 +50,7 @@ func (s *PersonService) GetPerson(id string) (*domain.Person, error) {
 		return nil, err
 	}
 	
-	log.Printf("- services.GetPerson - p : %v ", p)
-
+	//log.Printf("- services.GetPerson - p : %v ", p)
 	return p, nil
 }
 
@@ -64,8 +63,7 @@ func (s *PersonService) ListPerson() (*[]domain.Person, error) {
 		return nil, err
 	}
 
-	log.Printf("- services.ListPerson - p : %v ", p)
-
+	//log.Printf("- services.ListPerson - p : %v ", p)
 	return p, nil
 }
 

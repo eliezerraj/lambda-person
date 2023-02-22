@@ -11,6 +11,11 @@ func (s *PersonService) AddPersonAddress(personAddress domain.PersonAddress) (*d
 	log.Printf("+++++++++++++++++++++++++++++++++")
 	log.Print("- services.AddPersonAddress - personAddress   : ", personAddress)
 
+	person, err := s.personRepository.GetPerson(personAddress.Person.id)
+	if err != nil {
+		return nil, err
+	}
+
 	p, err := s.personRepository.AddPersonAddress(personAddress)
 	if err != nil {
 		return nil, err

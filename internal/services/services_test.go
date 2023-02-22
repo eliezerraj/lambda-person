@@ -231,7 +231,6 @@ func TestQueryPersonAddress(t *testing.T) {
 	} else {
 		t.Errorf("Error TestQueryPersonAddress input %s ", id)
 	}
-
 }
 
 func TestQueryPersonAddressNotFound(t *testing.T) {
@@ -253,4 +252,27 @@ func TestQueryPersonAddressNotFound(t *testing.T) {
 	} else {
 		t.Errorf("Error TestQueryPersonAddressNotFound input %s ", id)
 	}
+}
+
+func TestAddPersonAddressNotFound(t *testing.T) {
+	t.Setenv("AWS_REGION", "us-east-2")
+	personRepository, err := repository.NewPersonRepository(tableName)
+	if err != nil {
+		t.Errorf("Error - TestAddPersonAddressNotFound Create Repository DynanoDB")
+	}
+
+	personService	:= NewPersonService(*personRepository)
+	personAddress := domain.PersonAddress{*person99, listAdresses99}
+	
+    result, err := personService.AddPersonAddress(personAddress)
+	if err != nil {
+		t.Errorf("Error - TestAddPersonAddressNotFound Access DynanoDB %v ", tableName)
+	}
+
+	if (cmp.Equal(&personAddress, result)) {
+		t.Logf("Success TestAddPersonAddressNotFound result : %v ", result)
+	} else {
+		t.Errorf("Error NOT EQUAL TestAddPersonAddressNotFound input : %v ",&personAddress1)
+	}
+
 }
