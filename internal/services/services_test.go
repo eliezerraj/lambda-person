@@ -59,6 +59,18 @@ func TestAddPerson(t *testing.T) {
 	} else {
 		t.Errorf("Error TestAddPerson input : %v" , *person)
 	}
+
+    result, err = personService.AddPerson(*person2)
+	if err != nil {
+		t.Errorf("Error -TestAddPerson Access DynanoDB %v ", tableName)
+	}
+	//println(cmp.Equal(person, result))
+
+	if (cmp.Equal(person2, result)) {
+		t.Logf("Success on TestAddPerson!!! result : %v ", result)
+	} else {
+		t.Errorf("Error TestAddPerson input : %v" , *person2)
+	}
 }
 
 func TestListPerson(t *testing.T) {
