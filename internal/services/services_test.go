@@ -184,7 +184,7 @@ func TestAddPersonAddress(t *testing.T) {
 	}
 }
 
-/*func TestListPersonAddress(t *testing.T) {
+func TestListPersonAddress(t *testing.T) {
 	t.Setenv("AWS_REGION", "us-east-2")
 	personRepository, err := repository.NewPersonRepository(tableName)
 	if err != nil {
@@ -199,7 +199,7 @@ func TestAddPersonAddress(t *testing.T) {
 	}
 	
 	t.Logf("Success !!! result : %v", result)
-}*/
+}
 
 func TestQueryPersonAddress(t *testing.T) {
 	t.Setenv("AWS_REGION", "us-east-2")

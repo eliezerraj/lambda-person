@@ -74,8 +74,23 @@ func (r *PersonRepository) ListPerson() (*[]domain.Person, error){
 	log.Printf("+++++++++++++++++++++++++++++++++")
 	log.Printf("- repository.ListPerson -")
 
+	expr, err := expression.NewBuilder().
+							WithFilter(       expression.And(
+								expression.Contains(expression.Name("sk"), "PERSON"),
+								expression.Contains(expression.Name("id"), "PERSON"),
+								),).
+							Build()
+	if err != nil {
+		log.Printf("erro :", err) 
+		return nil, erro.ErrPreparedQuery
+	}
+
+
 	key := &dynamodb.ScanInput{
-		TableName:	r.tableName,
+		TableName:                 	r.tableName,
+		ExpressionAttributeNames:  	expr.Names(),
+		ExpressionAttributeValues: 	expr.Values(),
+		FilterExpression:    		expr.Filter(),
 	}
 
 	result, err := r.client.Scan(key)
@@ -83,12 +98,10 @@ func (r *PersonRepository) ListPerson() (*[]domain.Person, error){
 		log.Printf("Erro(ErrList):", err) 
 		return nil, erro.ErrList
 	}
-	//log.Printf("result => ", result)
+	log.Printf("result => ", result)
 
 	persons := []domain.Person{}
 	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, &persons)
-	//log.Printf("--------------------------------")
-	//log.Printf("persons => ", persons)
     if err != nil {
 		log.Printf("erro(ErrUnmarshal) :", err) 
 		return nil, erro.ErrUnmarshal
@@ -126,14 +139,12 @@ func (r *PersonRepository) GetPerson(id string) (*domain.Person, error){
 								ExpressionAttributeValues: expr.Values(),
 								KeyConditionExpression:    expr.KeyCondition(),
 	}
-	//log.Printf("key => ", key)
+
 	result, err := r.client.Query(key)
 	if err != nil {
 		log.Printf("erro :", err) 
 		return nil, erro.ErrQuery
 	}
-	
-	//log.Println("result => ", result)
 
 	person := []domain.Person{}
 	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, &person)
