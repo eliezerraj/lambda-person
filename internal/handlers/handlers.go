@@ -15,7 +15,6 @@ import(
 
 )
 
-var version = "version 2.0"
 var transactionSuccess	= "Transação com sucesso"
 
 type PersonHandler struct {
@@ -149,7 +148,7 @@ func (h *PersonHandler) ListPerson() (*events.APIGatewayProxyResponse, error) {
 	return handlerResponse, nil
 }
 
-func (h *PersonHandler) GetVersion() (*events.APIGatewayProxyResponse, error) {
+func (h *PersonHandler) GetVersion(version string) (*events.APIGatewayProxyResponse, error) {
 	log.Printf("+++++++++++++++++++++++++++++++++")
 	log.Printf("- handlers.GetVersion -")
 

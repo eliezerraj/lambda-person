@@ -14,6 +14,7 @@ import(
 
 var (
 	tableName = "person_tenant"
+	version 	= "lambda person version 1.0"
 	response 			*events.APIGatewayProxyResponse
 	personRepository	*repository.PersonRepository
 	personService 		*services.PersonService
@@ -54,7 +55,7 @@ func handler(req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse
 			}else if (req.Resource == "/personaddress/{id}"){
 				response, _ = personHandler.GetPersonAddress(req)
 			}else if (req.Resource == "/version"){
-				response, _ = personHandler.GetVersion()
+				response, _ = personHandler.GetVersion(version)
 			}else {
 				response, _ = personHandler.UnhandledMethod()
 			}
