@@ -2,7 +2,10 @@ package main
 
 import(
 	"fmt"
+	"os"
 
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"lambda-person/internal/handlers"
 	"lambda-person/internal/repository"
 	"lambda-person/internal/services"
@@ -13,16 +16,42 @@ import(
 )
 
 var (
-	tableName = "person_tenant"
-	version 	= "lambda person version 1.0"
+	logLevel = zerolog.DebugLevel // InfoLevel DebugLevel
+	tableName 		= "person_tenant"
+	version 		= "lambda person version 1.0"
 	response 			*events.APIGatewayProxyResponse
 	personRepository	*repository.PersonRepository
 	personService 		*services.PersonService
 	personHandler 		*handlers.PersonHandler
-  )
+)
+
+func getEnv() {
+	if os.Getenv("TABLE_NAME") !=  "" {
+		tableName = os.Getenv("TABLE_NAME")
+	}
+	if os.Getenv("LOG_LEVEL") !=  "" {
+		if (os.Getenv("LOG_LEVEL") == "DEBUG"){
+			logLevel = zerolog.DebugLevel
+		}else if (os.Getenv("LOG_LEVEL") == "INFO"){
+			logLevel = zerolog.InfoLevel
+		}else if (os.Getenv("LOG_LEVEL") == "ERROR"){
+				logLevel = zerolog.ErrorLevel
+		}else {
+			logLevel = zerolog.InfoLevel
+		}
+	}
+	if os.Getenv("VERSION") !=  "" {
+		version = os.Getenv("VERSION")
+	}
+}
+
+func init(){
+	zerolog.SetGlobalLevel(logLevel)
+	getEnv()
+}
 
 func main(){
-	fmt.Println("Main Person (GO) v 2.0")
+	log.Debug().Msg("main lambda-card (go) v 1.0")
 	
 	personRepository, err := repository.NewPersonRepository(tableName)
 	if err != nil {
@@ -35,8 +64,8 @@ func main(){
 }
 
 func handler(req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
-	fmt.Println("main.handler")
-	fmt.Println("-----------------------------")
+	log.Debug().Msg("handler")
+	log.Debug().Msg("-----------------------------")
 	fmt.Println(req.Resource)
 	fmt.Println(req.Path)
 	fmt.Println(req.HTTPMethod)
