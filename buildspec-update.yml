@@ -12,7 +12,8 @@ phases:
       - echo PRE_BUILD no tasks... 
   build: 
     commands: 
-      - echo BUILD update lambda-function... 
+      - echo BUILD update lambda-function...
+      - echo aws lambda update-function-code --function-name ${FUNCTION_NAME} --s3-bucket ${BUCKET_NAME} --s3-key ${FUNCTION_NAME}/main.zip
       - aws lambda update-function-code --function-name ${FUNCTION_NAME} --s3-bucket ${BUCKET_NAME} --s3-key ${FUNCTION_NAME}/main.zip
   
   post_build: 
