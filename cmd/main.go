@@ -18,7 +18,7 @@ import(
 var (
 	logLevel = zerolog.DebugLevel // InfoLevel DebugLevel
 	tableName 		= "person_tenant"
-	version 		= "lambda person version 1.0"
+	version 		= "lambda person (github) version 2.0"
 	response 			*events.APIGatewayProxyResponse
 	personRepository	*repository.PersonRepository
 	personService 		*services.PersonService
