@@ -1,19 +1,20 @@
 package handlers
 
 import(
-	"log"
+	"github.com/rs/zerolog/log"
 	"net/http"
 	"encoding/json"
 
 	"lambda-person/internal/services"
 	"lambda-person/internal/erro"
-	//"lambda-person/internal/ports"
 	"lambda-person/internal/core/domain"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-lambda-go/events"
 
 )
+
+var childLogger = log.With().Str("handler", "PersonHandler").Logger()
 
 var transactionSuccess	= "Transação com sucesso"
 
@@ -34,8 +35,7 @@ func (h *PersonHandler) UnhandledMethod() (*events.APIGatewayProxyResponse, erro
 }
 
 func NewPersonHandler(personService services.PersonService) *PersonHandler{
-	log.Printf("----------------------------")
-	log.Print("- handler.NewPersonHandler") 
+	childLogger.Debug().Msg("NewPersonHandler")
 
 	return &PersonHandler{
 		personService: personService,
@@ -43,8 +43,7 @@ func NewPersonHandler(personService services.PersonService) *PersonHandler{
 }
 
 func (h *PersonHandler) AddPerson(req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
-	log.Printf("+++++++++++++++++++++++++++++++++")
-	log.Printf("- handlers.AddPerson -")
+	childLogger.Debug().Msg("AddPerson")
 
     var person domain.Person
     if err := json.Unmarshal([]byte(req.Body), &person); err != nil {
@@ -64,8 +63,7 @@ func (h *PersonHandler) AddPerson(req events.APIGatewayProxyRequest) (*events.AP
 }
 
 func (h *PersonHandler) UpdatePerson(req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
-	log.Printf("+++++++++++++++++++++++++++++++++")
-	log.Printf("- handlers.UpdatePerson -")
+	childLogger.Debug().Msg("UpdatePerson")
 
 	var person domain.Person
     if err := json.Unmarshal([]byte(req.Body), &person); err != nil {
@@ -85,8 +83,7 @@ func (h *PersonHandler) UpdatePerson(req events.APIGatewayProxyRequest) (*events
 }
 
 func (h *PersonHandler) GetPerson(req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
-	log.Printf("+++++++++++++++++++++++++++++++++")
-	log.Printf("- handlers.GetPerson -")
+	childLogger.Debug().Msg("GetPerson")
 
 	id := req.PathParameters["id"]
 	if len(id) == 0 {
@@ -108,8 +105,7 @@ func (h *PersonHandler) GetPerson(req events.APIGatewayProxyRequest) (*events.AP
 }
 
 func (h *PersonHandler) DeletePerson(req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
-	log.Printf("+++++++++++++++++++++++++++++++++")
-	log.Printf("- handlers.DeletePerson -")
+	childLogger.Debug().Msg("DeletePerson")
 
 	id := req.PathParameters["id"]
 	sk := req.PathParameters["sk"]
@@ -131,8 +127,7 @@ func (h *PersonHandler) DeletePerson(req events.APIGatewayProxyRequest) (*events
 }
 
 func (h *PersonHandler) ListPerson() (*events.APIGatewayProxyResponse, error) {
-	log.Printf("+++++++++++++++++++++++++++++++++")
-	log.Printf("- handlers.ListPerson -")
+	childLogger.Debug().Msg("ListPerson")
 
 	response, err := h.personService.ListPerson()
 	if err != nil {
@@ -149,8 +144,7 @@ func (h *PersonHandler) ListPerson() (*events.APIGatewayProxyResponse, error) {
 }
 
 func (h *PersonHandler) GetVersion(version string) (*events.APIGatewayProxyResponse, error) {
-	log.Printf("+++++++++++++++++++++++++++++++++")
-	log.Printf("- handlers.GetVersion -")
+	childLogger.Debug().Msg("GetVersion")
 
 	response := MessageBody { Msg: &version }
 	handlerResponse, err := ApiHandlerResponse(http.StatusOK, response)
@@ -165,8 +159,7 @@ func (h *PersonHandler) GetVersion(version string) (*events.APIGatewayProxyRespo
 //------------------------------------------
 
 func (h *PersonHandler) ListPersonAddress() (*events.APIGatewayProxyResponse, error) {
-	log.Printf("+++++++++++++++++++++++++++++++++")
-	log.Printf("- handlers.ListPersonAddress -")
+	childLogger.Debug().Msg("ListPersonAddress")
 
 	response, err := h.personService.ListPersonAddress()
 	if err != nil {
@@ -183,8 +176,7 @@ func (h *PersonHandler) ListPersonAddress() (*events.APIGatewayProxyResponse, er
 }
 
 func (h *PersonHandler) GetPersonAddress(req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
-	log.Printf("+++++++++++++++++++++++++++++++++")
-	log.Printf("- handlers.GetPersonAddress -")
+	childLogger.Debug().Msg("GetPersonAddress")
 
 	id := req.PathParameters["id"]
 	if len(id) == 0 {
@@ -206,9 +198,7 @@ func (h *PersonHandler) GetPersonAddress(req events.APIGatewayProxyRequest) (*ev
 }
 
 func (h *PersonHandler) AddPersonAddress(req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
-	log.Printf("+++++++++++++++++++++++++++++++++")
-	log.Printf("- handlers.AddPersonAddress -")
-	log.Printf("- req.Body -" , req.Body)
+	childLogger.Debug().Msg("AddPersonAddress")
 
     var personAddress domain.PersonAddress
     if err := json.Unmarshal([]byte(req.Body), &personAddress); err != nil {

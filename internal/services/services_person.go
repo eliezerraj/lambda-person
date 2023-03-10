@@ -1,16 +1,13 @@
 package services
 
 import(
-	"log"
 
 	"lambda-person/internal/core/domain"
-//	"lambda-person/internal/ports"
 
 )
 
 func (s *PersonService) AddPerson(person domain.Person) (*domain.Person, error) {
-	log.Printf("+++++++++++++++++++++++++++++++++")
-	log.Printf("- services.AddPerson -")
+	childLogger.Debug().Msg("AddPerson")
 
 	p, err := s.personRepository.AddPerson(person)
 	if err != nil {
@@ -20,8 +17,7 @@ func (s *PersonService) AddPerson(person domain.Person) (*domain.Person, error) 
 }
 
 func (s *PersonService) DeletePerson(id string, sk string) (error) {
-	log.Printf("+++++++++++++++++++++++++++++++++")
-	log.Printf("- services.DeletePerson -")
+	childLogger.Debug().Msg("DeletePerson")
 
 	err := s.personRepository.DeletePerson(id, sk)
 	if err != nil {
@@ -31,8 +27,7 @@ func (s *PersonService) DeletePerson(id string, sk string) (error) {
 }
 
 func (s *PersonService) UpdatePerson(person domain.Person) (*domain.Person, error) {
-	log.Printf("+++++++++++++++++++++++++++++++++")
-	log.Printf("- services.AddUpdatePersonPerson -")
+	childLogger.Debug().Msg("UpdatePerson")
 
 	p, err := s.personRepository.AddPerson(person)
 	if err != nil {
@@ -42,8 +37,7 @@ func (s *PersonService) UpdatePerson(person domain.Person) (*domain.Person, erro
 }
 
 func (s *PersonService) GetPerson(id string) (*domain.Person, error) {
-	log.Printf("+++++++++++++++++++++++++++++++++")
-	log.Printf("- services.GetPerson -")
+	childLogger.Debug().Msg("GetPerson")
 
 	p, err := s.personRepository.GetPerson(id)
 	if err != nil {
@@ -55,8 +49,7 @@ func (s *PersonService) GetPerson(id string) (*domain.Person, error) {
 }
 
 func (s *PersonService) ListPerson() (*[]domain.Person, error) {
-	log.Printf("+++++++++++++++++++++++++++++++++")
-	log.Printf("- services.ListPerson -")
+	childLogger.Debug().Msg("ListPerson")
 
 	p, err := s.personRepository.ListPerson()
 	if err != nil {

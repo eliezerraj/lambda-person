@@ -3,6 +3,7 @@ package services
 import (
 	"testing"
 
+	"github.com/rs/zerolog"
 	"github.com/google/go-cmp/cmp"
 
 	"lambda-person/internal/repository"
@@ -41,6 +42,8 @@ func TestSum(t *testing.T) {
 
 func TestAddPerson(t *testing.T) {
 	t.Setenv("AWS_REGION", "us-east-2")
+	zerolog.SetGlobalLevel(zerolog.ErrorLevel)
+
 	personRepository, err := repository.NewPersonRepository(tableName)
 	if err != nil {
 		t.Errorf("Error - TestAddPerson Create Repository DynanoDB")
@@ -75,6 +78,8 @@ func TestAddPerson(t *testing.T) {
 
 func TestListPerson(t *testing.T) {
 	t.Setenv("AWS_REGION", "us-east-2")
+	zerolog.SetGlobalLevel(zerolog.ErrorLevel)
+
 	personRepository, err := repository.NewPersonRepository(tableName)
 	if err != nil {
 		t.Errorf("Error Create Repository DynanoDB")
@@ -91,6 +96,8 @@ func TestListPerson(t *testing.T) {
 
 func TestGetPerson(t *testing.T) {
 	t.Setenv("AWS_REGION", "us-east-2")
+	zerolog.SetGlobalLevel(zerolog.ErrorLevel)
+
 	personRepository, err := repository.NewPersonRepository(tableName)
 	if err != nil {
 		t.Errorf("Error -TestGetPerson  Create Repository DynanoDB")
@@ -124,6 +131,8 @@ func TestGetPerson(t *testing.T) {
 
 func TestAddPersonDelete(t *testing.T) {
 	t.Setenv("AWS_REGION", "us-east-2")
+	zerolog.SetGlobalLevel(zerolog.ErrorLevel)
+
 	personRepository, err := repository.NewPersonRepository(tableName)
 	if err != nil {
 		t.Errorf("Error - TestAddPersonDelete Create Repository DynanoDB")
@@ -144,8 +153,9 @@ func TestAddPersonDelete(t *testing.T) {
 }
 
 func TestDeletePerson(t *testing.T) {
-
 	t.Setenv("AWS_REGION", "us-east-2")
+	zerolog.SetGlobalLevel(zerolog.ErrorLevel)
+
 	personRepository, err := repository.NewPersonRepository(tableName)
 	if err != nil {
 		t.Errorf("Error - TestDeletePerson Create Repository DynanoDB")
@@ -163,6 +173,8 @@ func TestDeletePerson(t *testing.T) {
 
 func TestAddPersonAddress(t *testing.T) {
 	t.Setenv("AWS_REGION", "us-east-2")
+	zerolog.SetGlobalLevel(zerolog.ErrorLevel)
+	
 	personRepository, err := repository.NewPersonRepository(tableName)
 	if err != nil {
 		t.Errorf("Error Create Repository DynanoDB")
@@ -215,6 +227,8 @@ func TestAddPersonAddress(t *testing.T) {
 
 func TestQueryPersonAddress(t *testing.T) {
 	t.Setenv("AWS_REGION", "us-east-2")
+	zerolog.SetGlobalLevel(zerolog.ErrorLevel)
+
 	personRepository, err := repository.NewPersonRepository(tableName)
 	if err != nil {
 		t.Errorf("Error - TestQueryPersonAddressCreate Repository DynanoDB")
@@ -247,6 +261,8 @@ func TestQueryPersonAddress(t *testing.T) {
 
 func TestQueryPersonAddressNotFound(t *testing.T) {
 	t.Setenv("AWS_REGION", "us-east-2")
+	zerolog.SetGlobalLevel(zerolog.ErrorLevel)
+
 	personRepository, err := repository.NewPersonRepository(tableName)
 	if err != nil {
 		t.Errorf("Error - TestQueryPersonAddressNotFound Repository DynanoDB")
@@ -268,6 +284,8 @@ func TestQueryPersonAddressNotFound(t *testing.T) {
 
 func TestAddPersonAddressNotFound(t *testing.T) {
 	t.Setenv("AWS_REGION", "us-east-2")
+	zerolog.SetGlobalLevel(zerolog.ErrorLevel)
+
 	personRepository, err := repository.NewPersonRepository(tableName)
 	if err != nil {
 		t.Errorf("Error - TestAddPersonAddressNotFound Create Repository DynanoDB")
@@ -282,5 +300,4 @@ func TestAddPersonAddressNotFound(t *testing.T) {
 	} else {
 		t.Errorf("Error - TestAddPersonAddressNotFound Item Found %v ", err)
 	}
-
 }

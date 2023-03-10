@@ -1,7 +1,6 @@
 package repository
 
 import(
-	"log"
 	"lambda-person/internal/core/domain"
 	"lambda-person/internal/erro"
 	"fmt"
@@ -18,8 +17,7 @@ type PersonAddressRecord struct {
 }
 
 func (r *PersonRepository) AddPersonAddress(personAddress domain.PersonAddress) (*domain.PersonAddress, error){
-	log.Printf("+++++++++++++++++++++++++++++++++")
-	log.Printf("- repository.AddPersonAddress - personAddress : ", personAddress)
+	childLogger.Debug().Msg("AddPersonAddress")
 	//log.Printf("- repository.AddPersonAddress - adresses : ", adresses)
 
 	for _, item_address := range personAddress.Addresses {
@@ -35,7 +33,7 @@ func (r *PersonRepository) AddPersonAddress(personAddress domain.PersonAddress) 
 
 		item, err := dynamodbattribute.MarshalMap(item_to_marshall)
 		if err != nil {
-			log.Print("erro :", err) 
+			childLogger.Error().Err(err).Msg("error message")
 			return nil, erro.ErrUnmarshal
 		}
 
@@ -47,13 +45,13 @@ func (r *PersonRepository) AddPersonAddress(personAddress domain.PersonAddress) 
 	
 		transaction := &dynamodb.TransactWriteItemsInput{TransactItems: transactItems}
 		if err := transaction.Validate(); err != nil {
-			log.Print("erro :", err) 
+			childLogger.Error().Err(err).Msg("error message")
 			return nil, erro.ErrInsert
 		}
 	
 		_, err = r.client.TransactWriteItems(transaction)
 		if err != nil {
-			log.Print("erro :", err) 
+			childLogger.Error().Err(err).Msg("error message")
 			return nil, erro.ErrInsert
 		}
 	}
@@ -62,8 +60,7 @@ func (r *PersonRepository) AddPersonAddress(personAddress domain.PersonAddress) 
 }
 
 func (r *PersonRepository) ListPersonAddress() (*[]domain.PersonAddress, error){
-	log.Printf("+++++++++++++++++++++++++++++++++")
-	log.Printf("- repository.ListPersonAddress -")
+	childLogger.Debug().Msg("ListPersonAddress")
 
 	key := &dynamodb.ScanInput{
 		TableName:	r.tableName,
@@ -71,20 +68,20 @@ func (r *PersonRepository) ListPersonAddress() (*[]domain.PersonAddress, error){
 
 	result, err := r.client.Scan(key)
 	if err != nil {
-		log.Printf("Erro(ErrList):", err) 
+		childLogger.Error().Err(err).Msg("error message")
 		return nil, erro.ErrList
 	}
-	log.Printf("result => ", result)
+	//log.Printf("result => ", result)
 
 	personAddress := []domain.PersonAddress{}
 	personAddressRecord := PersonAddressRecord{}
 	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, &personAddressRecord)
     if err != nil {
-		log.Printf("erro :", err) 
+		childLogger.Error().Err(err).Msg("error message")
 		return nil, erro.ErrUnmarshal
     }
 
-	log.Printf("personAddressRecord => ", personAddressRecord)
+	//log.Printf("personAddressRecord => ", personAddressRecord)
 	if len(personAddress) == 0 {
 		return nil, erro.ErrNotFound
 	} else {
@@ -93,8 +90,7 @@ func (r *PersonRepository) ListPersonAddress() (*[]domain.PersonAddress, error){
 }
 
 func (r *PersonRepository) QueryPersonAddress(id string) (*domain.PersonAddress, error){
-	log.Printf("+++++++++++++++++++++++++++++++++")
-	log.Printf("- repository.QueryPersonAddress -")
+	childLogger.Debug().Msg("QueryPersonAddress")
 
 	var keyCond expression.KeyConditionBuilder
 	sk := "ADDRESS"
@@ -119,7 +115,7 @@ func (r *PersonRepository) QueryPersonAddress(id string) (*domain.PersonAddress,
 
 	result, err := r.client.Query(key)
 	if err != nil {
-		log.Printf("Erro(ErrList):", err) 
+		childLogger.Error().Err(err).Msg("error message")
 		return nil, erro.ErrList
 	}
 	//log.Printf("result => ", result)
@@ -127,7 +123,7 @@ func (r *PersonRepository) QueryPersonAddress(id string) (*domain.PersonAddress,
 	personAddressRecord := []PersonAddressRecord{}
 	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, &personAddressRecord)
     if err != nil {
-		log.Printf("erro :", err) 
+		childLogger.Error().Err(err).Msg("error message")
 		return nil, erro.ErrUnmarshal
     }
 	//log.Printf("personAddressRecord => ", personAddressRecord)

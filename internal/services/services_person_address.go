@@ -1,15 +1,14 @@
 package services
 
 import(
-	"log"
+	//"log"
 
 	"lambda-person/internal/core/domain"
 
 )
 
 func (s *PersonService) AddPersonAddress(personAddress domain.PersonAddress) (*domain.PersonAddress, error) {
-	log.Printf("+++++++++++++++++++++++++++++++++")
-	log.Print("- services.AddPersonAddress - personAddress   : ", personAddress)
+	childLogger.Debug().Msg("AddPersonAddress")
 
 	_, err := s.personRepository.GetPerson(personAddress.Person.ID)
 	if err != nil {
@@ -24,8 +23,7 @@ func (s *PersonService) AddPersonAddress(personAddress domain.PersonAddress) (*d
 }
 
 func (s *PersonService) ListPersonAddress() (*[]domain.PersonAddress, error) {
-	log.Printf("+++++++++++++++++++++++++++++++++")
-	log.Print("- services.ListPersonAddress")
+	childLogger.Debug().Msg("ListPersonAddress")
 
 	p, err := s.personRepository.ListPersonAddress()
 	if err != nil {
@@ -35,8 +33,7 @@ func (s *PersonService) ListPersonAddress() (*[]domain.PersonAddress, error) {
 }
 
 func (s *PersonService) QueryPersonAddress(id string) (*domain.PersonAddress, error) {
-	log.Printf("+++++++++++++++++++++++++++++++++")
-	log.Print("- services.QueryPersonAddress")
+	childLogger.Debug().Msg("QueryPersonAddress")
 
 	p, err := s.personRepository.QueryPersonAddress(id)
 	if err != nil {

@@ -1,8 +1,9 @@
 package main
 
 import(
-	"fmt"
+//	"fmt"
 	"os"
+	"context"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -18,7 +19,7 @@ import(
 var (
 	logLevel = zerolog.DebugLevel // InfoLevel DebugLevel
 	tableName 		= "person_tenant"
-	version 		= "lambda person (github) version 2.0"
+	version 		= "lambda person (github) version 2.1"
 	response 			*events.APIGatewayProxyResponse
 	personRepository	*repository.PersonRepository
 	personService 		*services.PersonService
@@ -46,13 +47,19 @@ func getEnv() {
 }
 
 func init(){
+	log.Debug().Msg("*** init")
 	zerolog.SetGlobalLevel(logLevel)
 	getEnv()
 }
 
 func main(){
-	log.Debug().Msg("main lambda-card (go) v 1.0")
-	
+	log.Debug().Msg("*** main lambda-card (go) v 1.0")
+	log.Debug().Msg("-------------------")
+	log.Debug().Str("version", version).
+				Str("tableName", tableName).
+				Msg("Enviroment Variables")
+	log.Debug().Msg("--------------------")
+
 	personRepository, err := repository.NewPersonRepository(tableName)
 	if err != nil {
 		return
@@ -63,15 +70,13 @@ func main(){
 	lambda.Start(handler)
 }
 
-func handler(req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
+func handler(ctx context.Context, req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
 	log.Debug().Msg("handler")
 	log.Debug().Msg("-----------------------------")
-	fmt.Println(req.Resource)
-	fmt.Println(req.Path)
-	fmt.Println(req.HTTPMethod)
-	fmt.Println(req.QueryStringParameters)
-	fmt.Println(req.PathParameters)
-	fmt.Println("-----------------------------")
+	log.Debug().Msg("-------------------")
+	log.Debug().Str("req.Body", req.Body).
+				Msg("APIGateway Request.Body")
+	log.Debug().Msg("--------------------")
 
 	switch req.HTTPMethod {
 		case "GET":

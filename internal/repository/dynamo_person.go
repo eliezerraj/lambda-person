@@ -1,7 +1,6 @@
 package repository
 
 import(
-	"log"
 	"lambda-person/internal/core/domain"
 	"lambda-person/internal/erro"
 
@@ -13,8 +12,7 @@ import(
 )
 
 func (r *PersonRepository) DeletePerson(id string, sk string) (error) {
-	log.Printf("+++++++++++++++++++++++++++++++++")
-	log.Printf("- repository.DeletePerson - id : ", id)
+	childLogger.Debug().Msg("DeletePerson")
 
 	key := &dynamodb.DeleteItemInput{
 		Key: map[string]*dynamodb.AttributeValue{
@@ -30,7 +28,7 @@ func (r *PersonRepository) DeletePerson(id string, sk string) (error) {
 
 	_, err := r.client.DeleteItem(key)
 	if err != nil {
-		log.Print("erro :", err) 
+		childLogger.Error().Err(err).Msg("error message") 
 		return erro.ErrDelete
 	}
 
@@ -38,12 +36,11 @@ func (r *PersonRepository) DeletePerson(id string, sk string) (error) {
 }
 
 func (r *PersonRepository) AddPerson(person domain.Person) (*domain.Person, error){
-	log.Printf("+++++++++++++++++++++++++++++++++")
-	log.Printf("- repository.AddPerson - person : ", person)
+	childLogger.Debug().Msg("AddPerson")
 
 	item, err := dynamodbattribute.MarshalMap(person)
 	if err != nil {
-		log.Print("erro :", err) 
+		childLogger.Error().Err(err).Msg("error message")
 		return nil, erro.ErrUnmarshal
 	}
 
@@ -57,13 +54,13 @@ func (r *PersonRepository) AddPerson(person domain.Person) (*domain.Person, erro
 
 	transaction := &dynamodb.TransactWriteItemsInput{TransactItems: transactItems}
 	if err := transaction.Validate(); err != nil {
-		log.Printf("erro :", err) 
+		childLogger.Error().Err(err).Msg("error message")
 		return nil, erro.ErrInsert
 	}
 
 	_, err = r.client.TransactWriteItems(transaction)
 	if err != nil {
-		log.Printf("erro :", err) 
+		childLogger.Error().Err(err).Msg("error message")
 		return nil, erro.ErrInsert
 	}
 
@@ -71,8 +68,7 @@ func (r *PersonRepository) AddPerson(person domain.Person) (*domain.Person, erro
 }
 
 func (r *PersonRepository) ListPerson() (*[]domain.Person, error){
-	log.Printf("+++++++++++++++++++++++++++++++++")
-	log.Printf("- repository.ListPerson -")
+	childLogger.Debug().Msg("ListPerson")
 
 	expr, err := expression.NewBuilder().
 							WithFilter(       expression.And(
@@ -81,7 +77,7 @@ func (r *PersonRepository) ListPerson() (*[]domain.Person, error){
 								),).
 							Build()
 	if err != nil {
-		log.Printf("erro :", err) 
+		childLogger.Error().Err(err).Msg("error message")
 		return nil, erro.ErrPreparedQuery
 	}
 
@@ -94,15 +90,15 @@ func (r *PersonRepository) ListPerson() (*[]domain.Person, error){
 
 	result, err := r.client.Scan(key)
 	if err != nil {
-		log.Printf("Erro(ErrList):", err) 
+		childLogger.Error().Err(err).Msg("error message")
 		return nil, erro.ErrList
 	}
-	log.Printf("result => ", result)
+	//log.Printf("result => ", result)
 
 	persons := []domain.Person{}
 	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, &persons)
     if err != nil {
-		log.Printf("erro(ErrUnmarshal) :", err) 
+		childLogger.Error().Err(err).Msg("error message")
 		return nil, erro.ErrUnmarshal
     }
 
@@ -114,8 +110,7 @@ func (r *PersonRepository) ListPerson() (*[]domain.Person, error){
 }
 
 func (r *PersonRepository) GetPerson(id string) (*domain.Person, error){
-	log.Printf("+++++++++++++++++++++++++++++++++")
-	log.Printf("- repository.GetPerson - id : ", id)
+	childLogger.Debug().Msg("GetPerson")
 
 	var keyCond expression.KeyConditionBuilder
 
@@ -128,7 +123,7 @@ func (r *PersonRepository) GetPerson(id string) (*domain.Person, error){
 							WithKeyCondition(keyCond).
 							Build()
 	if err != nil {
-		log.Printf("erro :", err) 
+		childLogger.Error().Err(err).Msg("error message")
 		return nil, erro.ErrPreparedQuery
 	}
 
@@ -141,14 +136,14 @@ func (r *PersonRepository) GetPerson(id string) (*domain.Person, error){
 
 	result, err := r.client.Query(key)
 	if err != nil {
-		log.Printf("erro :", err) 
+		childLogger.Error().Err(err).Msg("error message")
 		return nil, erro.ErrQuery
 	}
 
 	person := []domain.Person{}
 	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, &person)
     if err != nil {
-		log.Printf("erro :", err) 
+		childLogger.Error().Err(err).Msg("error message")
 		return nil, erro.ErrUnmarshal
     }
 

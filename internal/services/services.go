@@ -1,20 +1,20 @@
 package services
 
 import(
-	"log"
+	"github.com/rs/zerolog/log"
 
 	"lambda-person/internal/repository"
-//	"lambda-person/internal/ports"
 
 )
+
+var childLogger = log.With().Str("service", "PersonService").Logger()
 
 type PersonService struct {
 	personRepository repository.PersonRepository
 }
 
 func NewPersonService(personRepository repository.PersonRepository) *PersonService{
-	log.Printf("----------------------------")
-	log.Print("- services.NewPersonService") 
+	childLogger.Debug().Msg("NewCardsService")
 
 	return &PersonService{
 		personRepository: personRepository,
