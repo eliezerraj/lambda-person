@@ -3,7 +3,7 @@ package notification
 import (
 	"testing"
 
-	"github.com/lambda-card/internal/core/domain"
+	"lambda-person/internal/core/domain"
 
 )
 
