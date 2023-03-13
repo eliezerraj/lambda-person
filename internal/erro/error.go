@@ -21,4 +21,6 @@ var (
 	ErrMethodNotAllowed = errors.New("Metodo não permitido")
 	ErrPreparedQuery 	= errors.New("Erro na preparação da Query para o Dynamo")
 	ErrQueryEmpty	 	= errors.New("Query string não pode ser vazia")
+	ErrPutEvent			= errors.New("Erro na notificação PUTEVENT")
+	ErrCreateSession	= errors.New("Erro na Criaçao da Sessao AWS")
 )

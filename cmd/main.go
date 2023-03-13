@@ -7,9 +7,10 @@ import(
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"lambda-person/internal/handlers"
+	"lambda-person/internal/adapter/handler"
 	"lambda-person/internal/repository"
 	"lambda-person/internal/services"
+	"lambda-person/internal/adapter/notification"
 
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-lambda-go/events"
@@ -19,11 +20,14 @@ import(
 var (
 	logLevel = zerolog.DebugLevel // InfoLevel DebugLevel
 	tableName 		= "person_tenant"
-	version 		= "lambda person (github) version 2.1"
+	version 		= "lambda person (github) version 2.2"
+	eventSource		=	"lambda-person"
+	eventBusName	=	"event-bus-person"
 	response 			*events.APIGatewayProxyResponse
 	personRepository	*repository.PersonRepository
 	personService 		*services.PersonService
-	personHandler 		*handlers.PersonHandler
+	personHandler 		*handler.PersonHandler
+	personNotification *notification.PersonNotification
 )
 
 func getEnv() {
@@ -53,7 +57,7 @@ func init(){
 }
 
 func main(){
-	log.Debug().Msg("*** main lambda-card (go) v 1.0")
+	log.Debug().Msg("*** main lambda-card (go) v 2.2")
 	log.Debug().Msg("-------------------")
 	log.Debug().Str("version", version).
 				Str("tableName", tableName).
@@ -64,13 +68,17 @@ func main(){
 	if err != nil {
 		return
 	}
-	personService		= services.NewPersonService(*personRepository)
-	personHandler		= handlers.NewPersonHandler(*personService)
+	personNotification, err = notification.NewPersonNotification(eventSource,eventBusName)
+	if err != nil{
+		return
+	}
+	personService		= services.NewPersonService(*personRepository, *personNotification)
+	personHandler		= handler.NewPersonHandler(*personService)
 
-	lambda.Start(handler)
+	lambda.Start(lambdaHandler)
 }
 
-func handler(ctx context.Context, req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
+func lambdaHandler(ctx context.Context, req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
 	log.Debug().Msg("handler")
 	log.Debug().Msg("-----------------------------")
 	log.Debug().Msg("-------------------")
