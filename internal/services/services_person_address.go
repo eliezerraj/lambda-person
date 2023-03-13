@@ -10,6 +10,9 @@ import(
 func (s *PersonService) AddPersonAddress(personAddress domain.PersonAddress) (*domain.PersonAddress, error) {
 	childLogger.Debug().Msg("AddPersonAddress")
 
+	// Setting the keys
+	personAddress.Person.ID = "PERSON-" + personAddress.Person.ID
+
 	_, err := s.personRepository.GetPerson(personAddress.Person.ID)
 	if err != nil {
 		return nil, err

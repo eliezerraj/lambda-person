@@ -93,6 +93,7 @@ func (r *PersonRepository) QueryPersonAddress(id string) (*domain.PersonAddress,
 	childLogger.Debug().Msg("QueryPersonAddress")
 
 	var keyCond expression.KeyConditionBuilder
+	id = fmt.Sprintf("PERSON-%s", id)
 	sk := "ADDRESS"
 	keyCond = expression.KeyAnd(
 		expression.Key("id").Equal(expression.Value(id)),
