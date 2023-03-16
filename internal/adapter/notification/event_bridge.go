@@ -50,10 +50,10 @@ func (n *PersonNotification) PutEvent(person domain.Person, eventType string) er
 	}
 
 	entries := []*eventbridge.PutEventsRequestEntry{{
-		Detail:       aws.String(string(payload)),
-		DetailType:   aws.String(eventType),
 		EventBusName: aws.String(n.eventBusName),
 		Source:       aws.String(n.eventSource),
+		DetailType:   aws.String(eventType),
+		Detail:       aws.String(string(payload)),
 	}}
 
 	_, err = n.client.PutEvents(&eventbridge.PutEventsInput{Entries: entries})

@@ -6,6 +6,12 @@ import(
 
 )
 
+var(
+	eventTypeCreated =  "personCreated"
+	eventTypeUpdated = 	"personUpdated"
+	eventTypeDeleted = 	"personDeleted"
+)
+
 func (s *PersonService) AddPerson(person domain.Person) (*domain.Person, error) {
 	childLogger.Debug().Msg("AddPerson")
 
@@ -19,8 +25,7 @@ func (s *PersonService) AddPerson(person domain.Person) (*domain.Person, error) 
 	}
 
 	// Stream new person
-	eventType := "add-new-person"
-	err = s.personNotification.PutEvent(*p, eventType)
+	err = s.personNotification.PutEvent(*p, eventTypeCreated)
 	if err != nil {
 		return nil, err
 	}
@@ -39,6 +44,12 @@ func (s *PersonService) DeletePerson(id string, sk string) (error) {
 		return err
 	}
 
+	// Stream update person
+	err = s.personNotification.PutEvent(*p, eventTypeDeleted)
+	if err != nil {
+		return nil, err
+	}
+
 	return nil
 }
 
@@ -55,8 +66,7 @@ func (s *PersonService) UpdatePerson(person domain.Person) (*domain.Person, erro
 	}
 
 	// Stream update person
-	eventType := "update-person"
-	err = s.personNotification.PutEvent(*p, eventType)
+	err = s.personNotification.PutEvent(*p, eventTypeUpdated)
 	if err != nil {
 		return nil, err
 	}
