@@ -9,7 +9,10 @@ import (
 
 var (
 	tableName = "person"
-	eventSource	= "lambda-person"
+	eventSource	= "lambda.person"
+	eventTypeCreated =  "personCreated"
+	eventTypeUpdated = 	"personUpdated"
+	eventTypeDeleted = 	"personDeleted"
 	eventBusName	= "event-bus-person"
 	person = domain.NewPerson("PERSON-001","PERSON-001","Mr Luigi","F")
 )
@@ -23,7 +26,7 @@ func TestPutEvent(t *testing.T) {
 	}
 
 	eventType := "add-new-person"
-	err = notification.PutEvent(*person, eventType)
+	err = notification.PutEvent(*person, eventTypeCreated)
 	if err != nil {
 		t.Errorf("Error -TestPutEvent Access EventBridge %v ", err)
 	}

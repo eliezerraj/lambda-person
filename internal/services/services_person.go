@@ -44,10 +44,11 @@ func (s *PersonService) DeletePerson(id string, sk string) (error) {
 		return err
 	}
 
-	// Stream update person
+	p := domain.NewPerson(id,sk, "", "")
+	// Stream delete person
 	err = s.personNotification.PutEvent(*p, eventTypeDeleted)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	return nil
