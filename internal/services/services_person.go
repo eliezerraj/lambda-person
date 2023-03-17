@@ -39,7 +39,14 @@ func (s *PersonService) DeletePerson(id string, sk string) (error) {
 	// Setting the keys
 	id = "PERSON-" + id
 	sk = "PERSON-" + sk
-	err := s.personRepository.DeletePerson(id, sk)
+
+	// Verify is person exists
+	_, err := s.personRepository.GetPerson(id)
+	if err != nil {
+		return err
+	}
+
+	err = s.personRepository.DeletePerson(id, sk)
 	if err != nil {
 		return err
 	}

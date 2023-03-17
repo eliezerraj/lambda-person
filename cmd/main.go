@@ -110,7 +110,7 @@ func lambdaHandler(ctx context.Context, req events.APIGatewayProxyRequest) (*eve
 				response, _ = personHandler.UnhandledMethod()
 			}
 		case "DELETE":
-			response, _ =personHandler.DeletePerson(req)
+			response, _ = personHandler.DeletePerson(req)
 		case "PUT":
 			response, _ = personHandler.UpdatePerson(req)
 		default:
