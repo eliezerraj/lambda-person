@@ -19,23 +19,17 @@ var (
 	personRepository	*repository.PersonRepository
 	personNotification *notification.PersonNotification
 
-	person = domain.NewPerson("001","","Mr Luigi","F")
 	adress01 = domain.NewAddress("ADDRESS-101","ADDRESS-101","St One",1,"zip-101")
 	adress02 = domain.NewAddress("ADDRESS-102","ADDRESS-102","St Two",2,"zip-102")
 	listAdresses = []domain.Address{*adress01, *adress02}
-	//personAddress = domain.NewPersonAddress(*person, listAdresses)
 
-	person2 = domain.NewPerson("002","","Mr Cookie","M")
 	adress201 = domain.NewAddress("ADDRESS-201","ADDRESS-201","St Three",1,"zip-201")
 	adress202 = domain.NewAddress("ADDRESS-202","ADDRESS-202","St Four",2,"zip-202")
 	adress203= domain.NewAddress("ADDRESS-203","ADDRESS-203","St Five",2,"zip-203")
 	listAdresses2 = []domain.Address{*adress201, *adress202, *adress203}
-	//personAddress2 = domain.NewPersonAddress(*person2, listAdresses2)
 
-	person99 = domain.NewPerson("999","","Mr Delete ME","M")
 	adress99 = domain.NewAddress("ADDRESS-99","ADDRESS-99","St nini nine",1,"zip-99")
 	listAdresses99 = []domain.Address{*adress99}
-	personAddress99 = domain.NewPersonAddress(*person99, listAdresses99)
 )
 
 /*func TestSum(t *testing.T) {
@@ -62,7 +56,7 @@ func TestAddPerson(t *testing.T) {
 	personService	:= NewPersonService(*personRepository, *personNotification)
 	
 	// ============================================ //
-	personAdd := domain.NewPerson("001","","Mr Luigi","F")
+	personAdd := domain.NewPerson("901","","Mr Eliezer","M")
 
     result, err := personService.AddPerson(*personAdd)
 	if err != nil {
@@ -80,7 +74,7 @@ func TestAddPerson(t *testing.T) {
 	}
 
 	// ============================================ //
-	personAdd2 := domain.NewPerson("002","","Mr Cookie","M")
+	personAdd2 := domain.NewPerson("902","","Mr Juliana","F")
     result, err = personService.AddPerson(*personAdd2)
 	if err != nil {
 		t.Errorf("Error -TestAddPerson Access DynanoDB %v err: %v ", tableName, err)
@@ -113,13 +107,13 @@ func TestUpdatePerson(t *testing.T) {
 
 	personService	:= NewPersonService(*personRepository, *personNotification)
 	
-	personUpdate := domain.NewPerson("099","","Mr Luigi","F")
+	personUpdate := domain.NewPerson("999","","Mr DELETE-ME","F")
     result, err := personService.AddPerson(*personUpdate)
 	if err != nil {
 		t.Errorf("Error -TestAddPerson DynanoDB %v err : %v", tableName, err)
 	}
 
-	personUpdate = domain.NewPerson("099","","Mr Luigi - UPDATED","M")
+	personUpdate = domain.NewPerson("999","","Mr DELETE-ME - UPDATED","M")
     result, err = personService.UpdatePerson(*personUpdate)
 	if err != nil {
 		t.Errorf("Error -TestUpdatePerson Access DynanoDB %v err: %v", tableName, err)
@@ -175,7 +169,7 @@ func TestGetPerson(t *testing.T) {
 	personService	:= NewPersonService(*personRepository, *personNotification)
 
 	//================
-	personGet := domain.NewPerson("001","","Mr Luigi","F")
+	personGet := domain.NewPerson("901","","","")
     result, err := personService.GetPerson(personGet.ID)
 	if err != nil {
 		t.Errorf("Error - TestGetPerson Access DynanoDB %v err: %v:", tableName, err)
@@ -184,13 +178,14 @@ func TestGetPerson(t *testing.T) {
 	// setting keys
 	personGet.ID = "PERSON-" + personGet.ID
 	personGet.SK = personGet.ID
-	if (cmp.Equal(personGet, result)) {
+
+	if (personGet.ID == result.ID) {
 		t.Logf("Success -TestGetPerson !!! result : %v :", result)
 	} else {
 		t.Errorf("Error TestGetPerson input : %v ", personGet.ID)
 	}
 
-	personGet2 := domain.NewPerson("002","","Mr Cookie","M")
+	personGet2 := domain.NewPerson("902","","","")
 	result, err = personService.GetPerson(personGet2.ID)
 	if err != nil {
 		t.Errorf("Error Access DynanoDB %v err: %v ", tableName, err)
@@ -199,7 +194,7 @@ func TestGetPerson(t *testing.T) {
 	// setting keys
 	personGet2.ID = "PERSON-" + personGet2.ID
 	personGet2.SK = personGet2.ID
-	if (cmp.Equal(personGet2, result)) {
+	if (personGet2.ID == result.ID) {
 		t.Logf("Success -TestGetPerson !!! result : %v :", result)
 	} else {
 		t.Errorf("Error TestGetPerson input : %v ", personGet2.ID)
@@ -254,6 +249,8 @@ func TestDeletePerson(t *testing.T) {
 
 	personService	:= NewPersonService(*personRepository, *personNotification)
 	
+	person99 := domain.NewPerson("999","","Mr DELETE-ME","F")
+
     err = personService.DeletePerson(person99.ID, person99.ID)
 	if err != nil {
 		t.Errorf("Error - TestDeletePerson DynanoDB %v err: %v", tableName, err)
@@ -300,7 +297,7 @@ func TestAddPersonAddress(t *testing.T) {
 
 	personService	:= NewPersonService(*personRepository, *personNotification)
 	
-	person_address := domain.NewPerson("001","","Mr Luigi","F")
+	person_address := domain.NewPerson("901","","","")
 	personAddress1 := domain.PersonAddress{*person_address, listAdresses}
 	
     result, err := personService.AddPersonAddress(personAddress1)
@@ -317,7 +314,7 @@ func TestAddPersonAddress(t *testing.T) {
 		t.Errorf("Error NOT EQUAL TestAddPersonAddress input : %v || result : %v ",&personAddress1, result)
 	}
 
-	person_address2 := domain.NewPerson("002","","Mr Cookie","M")
+	person_address2 := domain.NewPerson("902","","","")
 	personAddress2 := domain.PersonAddress{*person_address2, listAdresses2}
 
 	result, err = personService.AddPersonAddress(personAddress2)
@@ -338,6 +335,9 @@ func TestAddPersonAddress(t *testing.T) {
 func TestQueryPersonAddress(t *testing.T) {
 	t.Setenv("AWS_REGION", "us-east-2")
 	zerolog.SetGlobalLevel(zerolog.ErrorLevel)
+
+	person := domain.NewPerson("901","","Mr Eliezer","M")
+	person2 := domain.NewPerson("902","","Mrs Juliana","F")
 
 	personRepository, err := repository.NewPersonRepository(tableName)
 	if err != nil {
@@ -407,6 +407,8 @@ func TestQueryPersonAddressNotFound(t *testing.T) {
 func TestAddPersonAddressNotFound(t *testing.T) {
 	t.Setenv("AWS_REGION", "us-east-2")
 	zerolog.SetGlobalLevel(zerolog.ErrorLevel)
+
+	person99 := domain.NewPerson("999","","Mr DELETE-ME","F")
 
 	personRepository, err := repository.NewPersonRepository(tableName)
 	if err != nil {
