@@ -4,10 +4,10 @@ POC Lambda for technical purposes
 
 Lambda persist all data inside DynamoDB and create a notification via event EventBridge
 
-Flow
+Diagram Flow
 
       APIGW ==> Lambda ==> DynamoDB (person_tenant)
-                     ==> EventBridge (agregation-card-person {person})
+                       ==> EventBridge (agregation-card-person {person})
 
 ## Compile lambda
 
