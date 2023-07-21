@@ -66,11 +66,11 @@ func main(){
 
 	personRepository, err := repository.NewPersonRepository(tableName)
 	if err != nil {
-		return
+		panic("configuration error NewPersonRepository(), " + err.Error())
 	}
 	personNotification, err = notification.NewPersonNotification(eventSource,eventBusName)
 	if err != nil{
-		return
+		panic("configuration error NewPersonNotification(), " + err.Error())
 	}
 	personService		= services.NewPersonService(*personRepository, *personNotification)
 	personHandler		= handler.NewPersonHandler(*personService)
@@ -79,8 +79,7 @@ func main(){
 }
 
 func lambdaHandler(ctx context.Context, req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
-	log.Debug().Msg("handler")
-	log.Debug().Msg("-----------------------------")
+	log.Debug().Msg("lambdaHandler")
 	log.Debug().Msg("-------------------")
 	log.Debug().Str("req.Body", req.Body).
 				Msg("APIGateway Request.Body")
