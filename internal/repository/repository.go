@@ -10,6 +10,8 @@ import(
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
+
+		"github.com/aws/aws-xray-sdk-go/xray"
 )
 
 var childLogger = log.With().Str("repository", "PersonRepository").Logger()
@@ -31,8 +33,11 @@ func NewPersonRepository(tableName string) (*PersonRepository, error){
 		return nil, erro.ErrOpenDatabase
 	}
 
+	client := dynamodb.New(awsSession)
+	xray.AWS(client.Client)
+
 	return &PersonRepository {
-		client: dynamodb.New(awsSession),
+		client: client,
 		tableName: aws.String(tableName),
 	}, nil
 }

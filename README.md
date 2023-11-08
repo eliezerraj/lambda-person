@@ -8,6 +8,9 @@ Diagram Flow
 
       APIGW ==> Lambda ==> DynamoDB (person_tenant)
                        ==> EventBridge (event_type {person_tenant}) <== lambda-agregation-card-person-worker
+## Requirement
+
+
 
 ## Compile lambda
 

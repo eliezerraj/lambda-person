@@ -15,6 +15,8 @@ import(
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-lambda-go/events"
 
+	"github.com/aws/aws-xray-sdk-go/xray"
+
 )
 
 var (
@@ -53,6 +55,7 @@ func getEnv() {
 func init(){
 	log.Debug().Msg("*** init")
 	zerolog.SetGlobalLevel(logLevel)
+
 	getEnv()
 }
 
@@ -63,6 +66,13 @@ func main(){
 				Str("tableName", tableName).
 				Msg("Enviroment Variables")
 	log.Debug().Msg("--------------------")
+
+	err := xray.Configure(xray.Config{
+		LogLevel: "info",
+	})
+	if err != nil {
+		panic(err)
+	}
 
 	personRepository, err := repository.NewPersonRepository(tableName)
 	if err != nil {
@@ -88,13 +98,13 @@ func lambdaHandler(ctx context.Context, req events.APIGatewayProxyRequest) (*eve
 	switch req.HTTPMethod {
 		case "GET":
 			if (req.Resource == "/person/list"){
-				response, _ = personHandler.ListPerson()
+				response, _ = personHandler.ListPerson(ctx)
 			}else if (req.Resource == "/personaddress/list"){
-				response, _ = personHandler.ListPersonAddress()
+				response, _ = personHandler.ListPersonAddress(ctx)
 			}else if (req.Resource == "/person/{id}"){
-				response, _ = personHandler.GetPerson(req)
+				response, _ = personHandler.GetPerson(ctx,req)
 			}else if (req.Resource == "/personaddress/{id}"){
-				response, _ = personHandler.GetPersonAddress(req)
+				response, _ = personHandler.GetPersonAddress(ctx,req)
 			}else if (req.Resource == "/version"){
 				response, _ = personHandler.GetVersion(version)
 			}else {
@@ -102,16 +112,16 @@ func lambdaHandler(ctx context.Context, req events.APIGatewayProxyRequest) (*eve
 			}
 		case "POST":
 			if (req.Resource == "/person"){
-				response, _ = personHandler.AddPerson(req)
+				response, _ = personHandler.AddPerson(ctx, req)
 			} else if (req.Resource == "/personaddress") {
-				response, _ = personHandler.AddPersonAddress(req)
+				response, _ = personHandler.AddPersonAddress(ctx,req)
 			}else {
 				response, _ = personHandler.UnhandledMethod()
 			}
 		case "DELETE":
-			response, _ = personHandler.DeletePerson(req)
+			response, _ = personHandler.DeletePerson(ctx, req)
 		case "PUT":
-			response, _ = personHandler.UpdatePerson(req)
+			response, _ = personHandler.UpdatePerson(ctx, req)
 		default:
 			response, _ = personHandler.UnhandledMethod()
 	}

@@ -4,6 +4,7 @@ import(
 	"github.com/rs/zerolog/log"
 	"net/http"
 	"encoding/json"
+	"context"
 
 	"lambda-person/internal/services"
 	"lambda-person/internal/erro"
@@ -42,7 +43,7 @@ func NewPersonHandler(personService services.PersonService) *PersonHandler{
 	}
 }
 
-func (h *PersonHandler) AddPerson(req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
+func (h *PersonHandler) AddPerson(ctx context.Context, req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
 	childLogger.Debug().Msg("AddPerson")
 
     var person domain.Person
@@ -50,7 +51,7 @@ func (h *PersonHandler) AddPerson(req events.APIGatewayProxyRequest) (*events.AP
         return ApiHandlerResponse(http.StatusBadRequest, ErrorBody{aws.String(err.Error())})
     }
 
-	response, err := h.personService.AddPerson(person)
+	response, err := h.personService.AddPerson(ctx, person)
 	if err != nil {
 		return ApiHandlerResponse(http.StatusBadRequest, ErrorBody{aws.String(err.Error())})
 	}
@@ -62,7 +63,7 @@ func (h *PersonHandler) AddPerson(req events.APIGatewayProxyRequest) (*events.AP
 	return handlerResponse, nil
 }
 
-func (h *PersonHandler) UpdatePerson(req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
+func (h *PersonHandler) UpdatePerson(ctx context.Context,req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
 	childLogger.Debug().Msg("UpdatePerson")
 
 	var person domain.Person
@@ -70,7 +71,7 @@ func (h *PersonHandler) UpdatePerson(req events.APIGatewayProxyRequest) (*events
         return ApiHandlerResponse(http.StatusBadRequest, ErrorBody{aws.String(err.Error())})
     }
 
-	response, err := h.personService.UpdatePerson(person)
+	response, err := h.personService.UpdatePerson(ctx, person)
 	if err != nil {
 		return ApiHandlerResponse(http.StatusBadRequest, ErrorBody{aws.String(err.Error())})
 	}
@@ -82,7 +83,7 @@ func (h *PersonHandler) UpdatePerson(req events.APIGatewayProxyRequest) (*events
 	return handlerResponse, nil
 }
 
-func (h *PersonHandler) GetPerson(req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
+func (h *PersonHandler) GetPerson(ctx context.Context,req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
 	childLogger.Debug().Msg("GetPerson")
 
 	id := req.PathParameters["id"]
@@ -90,7 +91,7 @@ func (h *PersonHandler) GetPerson(req events.APIGatewayProxyRequest) (*events.AP
 		return ApiHandlerResponse(http.StatusBadRequest, ErrorBody{aws.String(erro.ErrQueryEmpty.Error())})
 	}
 
-	response, err := h.personService.GetPerson(id)
+	response, err := h.personService.GetPerson(ctx, id)
 	if err != nil {
 		return ApiHandlerResponse(http.StatusBadRequest, ErrorBody{aws.String(err.Error())})
 	}
@@ -104,7 +105,7 @@ func (h *PersonHandler) GetPerson(req events.APIGatewayProxyRequest) (*events.AP
 	return handlerResponse, nil
 }
 
-func (h *PersonHandler) DeletePerson(req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
+func (h *PersonHandler) DeletePerson(ctx context.Context, req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
 	childLogger.Debug().Msg("DeletePerson")
 
 	id := req.PathParameters["id"]
@@ -113,7 +114,7 @@ func (h *PersonHandler) DeletePerson(req events.APIGatewayProxyRequest) (*events
 		return ApiHandlerResponse(http.StatusBadRequest, ErrorBody{aws.String(erro.ErrQueryEmpty.Error())})
 	}
 	
-	err := h.personService.DeletePerson(id, sk)
+	err := h.personService.DeletePerson(ctx, id, sk)
 	if err != nil {
 		return ApiHandlerResponse(http.StatusBadRequest, ErrorBody{aws.String(err.Error())})
 	}
@@ -126,10 +127,10 @@ func (h *PersonHandler) DeletePerson(req events.APIGatewayProxyRequest) (*events
 	return handlerResponse, nil
 }
 
-func (h *PersonHandler) ListPerson() (*events.APIGatewayProxyResponse, error) {
+func (h *PersonHandler) ListPerson(ctx context.Context) (*events.APIGatewayProxyResponse, error) {
 	childLogger.Debug().Msg("ListPerson")
 
-	response, err := h.personService.ListPerson()
+	response, err := h.personService.ListPerson(ctx)
 	if err != nil {
 		return ApiHandlerResponse(http.StatusBadRequest, ErrorBody{aws.String(err.Error())})
 	}
@@ -158,10 +159,10 @@ func (h *PersonHandler) GetVersion(version string) (*events.APIGatewayProxyRespo
 
 //------------------------------------------
 
-func (h *PersonHandler) ListPersonAddress() (*events.APIGatewayProxyResponse, error) {
+func (h *PersonHandler) ListPersonAddress(ctx context.Context) (*events.APIGatewayProxyResponse, error) {
 	childLogger.Debug().Msg("ListPersonAddress")
 
-	response, err := h.personService.ListPersonAddress()
+	response, err := h.personService.ListPersonAddress(ctx)
 	if err != nil {
 		return ApiHandlerResponse(http.StatusBadRequest, ErrorBody{aws.String(err.Error())})
 	}
@@ -175,7 +176,7 @@ func (h *PersonHandler) ListPersonAddress() (*events.APIGatewayProxyResponse, er
 	return handlerResponse, nil
 }
 
-func (h *PersonHandler) GetPersonAddress(req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
+func (h *PersonHandler) GetPersonAddress(ctx context.Context, req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
 	childLogger.Debug().Msg("GetPersonAddress")
 
 	id := req.PathParameters["id"]
@@ -183,7 +184,7 @@ func (h *PersonHandler) GetPersonAddress(req events.APIGatewayProxyRequest) (*ev
 		return ApiHandlerResponse(http.StatusBadRequest, ErrorBody{aws.String(erro.ErrQueryEmpty.Error())})
 	}
 
-	response, err := h.personService.QueryPersonAddress(id)
+	response, err := h.personService.QueryPersonAddress(ctx, id)
 	if err != nil {
 		return ApiHandlerResponse(http.StatusBadRequest, ErrorBody{aws.String(err.Error())})
 	}
@@ -197,7 +198,7 @@ func (h *PersonHandler) GetPersonAddress(req events.APIGatewayProxyRequest) (*ev
 	return handlerResponse, nil
 }
 
-func (h *PersonHandler) AddPersonAddress(req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
+func (h *PersonHandler) AddPersonAddress(ctx context.Context, req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
 	childLogger.Debug().Msg("AddPersonAddress")
 
     var personAddress domain.PersonAddress
@@ -205,7 +206,7 @@ func (h *PersonHandler) AddPersonAddress(req events.APIGatewayProxyRequest) (*ev
         return ApiHandlerResponse(http.StatusBadRequest, ErrorBody{aws.String(err.Error())})
     }
 
-	response, err := h.personService.AddPersonAddress(personAddress)
+	response, err := h.personService.AddPersonAddress(ctx, personAddress)
 	if err != nil {
 		return ApiHandlerResponse(http.StatusBadRequest, ErrorBody{aws.String(err.Error())})
 	}

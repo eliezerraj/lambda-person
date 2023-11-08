@@ -1,6 +1,7 @@
 package repository
 
 import(
+	"context"
 	"lambda-person/internal/core/domain"
 	"lambda-person/internal/erro"
 
@@ -11,7 +12,7 @@ import(
 
 )
 
-func (r *PersonRepository) DeletePerson(id string, sk string) (error) {
+func (r *PersonRepository) DeletePerson(ctx context.Context, id string, sk string) (error) {
 	childLogger.Debug().Msg("DeletePerson")
 
 	key := &dynamodb.DeleteItemInput{
@@ -26,7 +27,7 @@ func (r *PersonRepository) DeletePerson(id string, sk string) (error) {
 		TableName: r.tableName,
 	}
 
-	_, err := r.client.DeleteItem(key)
+	_, err := r.client.DeleteItemWithContext(ctx, key)
 	if err != nil {
 		childLogger.Error().Err(err).Msg("error message") 
 		return erro.ErrDelete
@@ -35,7 +36,7 @@ func (r *PersonRepository) DeletePerson(id string, sk string) (error) {
 	return nil
 }
 
-func (r *PersonRepository) AddPerson(person domain.Person) (*domain.Person, error){
+func (r *PersonRepository) AddPerson(ctx context.Context, person domain.Person) (*domain.Person, error){
 	childLogger.Debug().Msg("AddPerson")
 
 	item, err := dynamodbattribute.MarshalMap(person)
@@ -58,7 +59,7 @@ func (r *PersonRepository) AddPerson(person domain.Person) (*domain.Person, erro
 		return nil, erro.ErrInsert
 	}
 
-	_, err = r.client.TransactWriteItems(transaction)
+	_, err = r.client.TransactWriteItemsWithContext(ctx, transaction)
 	if err != nil {
 		childLogger.Error().Err(err).Msg("error message")
 		return nil, erro.ErrInsert
@@ -67,7 +68,7 @@ func (r *PersonRepository) AddPerson(person domain.Person) (*domain.Person, erro
 	return &person , nil
 }
 
-func (r *PersonRepository) ListPerson() (*[]domain.Person, error){
+func (r *PersonRepository) ListPerson(ctx context.Context) (*[]domain.Person, error){
 	childLogger.Debug().Msg("ListPerson")
 
 	expr, err := expression.NewBuilder().
@@ -88,7 +89,7 @@ func (r *PersonRepository) ListPerson() (*[]domain.Person, error){
 		FilterExpression:    		expr.Filter(),
 	}
 
-	result, err := r.client.Scan(key)
+	result, err := r.client.ScanWithContext(ctx, key)
 	if err != nil {
 		childLogger.Error().Err(err).Msg("error message")
 		return nil, erro.ErrList
@@ -109,7 +110,7 @@ func (r *PersonRepository) ListPerson() (*[]domain.Person, error){
 	}
 }
 
-func (r *PersonRepository) GetPerson(id string) (*domain.Person, error){
+func (r *PersonRepository) GetPerson(ctx context.Context, id string) (*domain.Person, error){
 	childLogger.Debug().Msg("GetPerson")
 
 	var keyCond expression.KeyConditionBuilder
@@ -134,7 +135,7 @@ func (r *PersonRepository) GetPerson(id string) (*domain.Person, error){
 								KeyConditionExpression:    expr.KeyCondition(),
 	}
 
-	result, err := r.client.Query(key)
+	result, err := r.client.QueryWithContext(ctx, key)
 	if err != nil {
 		childLogger.Error().Err(err).Msg("error message")
 		return nil, erro.ErrQuery

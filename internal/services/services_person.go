@@ -1,8 +1,8 @@
 package services
 
 import(
-
 	"lambda-person/internal/core/domain"
+	"context"
 
 )
 
@@ -12,20 +12,20 @@ var(
 	eventTypeDeleted = 	"personDeleted"
 )
 
-func (s *PersonService) AddPerson(person domain.Person) (*domain.Person, error) {
+func (s *PersonService) AddPerson(ctx context.Context, person domain.Person) (*domain.Person, error) {
 	childLogger.Debug().Msg("AddPerson")
 
 	// Setting the keys
 	person.ID = "PERSON-" + person.ID
 	person.SK = person.ID
 
-	p, err := s.personRepository.AddPerson(person)
+	p, err := s.personRepository.AddPerson(ctx, person)
 	if err != nil {
 		return nil, err
 	}
 
 	// Stream new person
-	err = s.personNotification.PutEvent(*p, eventTypeCreated)
+	err = s.personNotification.PutEvent(ctx ,*p, eventTypeCreated)
 	if err != nil {
 		return nil, err
 	}
@@ -33,7 +33,7 @@ func (s *PersonService) AddPerson(person domain.Person) (*domain.Person, error) 
 	return p, nil
 }
 
-func (s *PersonService) DeletePerson(id string, sk string) (error) {
+func (s *PersonService) DeletePerson(ctx context.Context, id string, sk string) (error) {
 	childLogger.Debug().Msg("DeletePerson")
 
 	// Setting the keys
@@ -41,19 +41,19 @@ func (s *PersonService) DeletePerson(id string, sk string) (error) {
 	sk = "PERSON-" + sk
 
 	// Verify is person exists
-	_, err := s.personRepository.GetPerson(id)
+	_, err := s.personRepository.GetPerson(ctx, id)
 	if err != nil {
 		return err
 	}
 
-	err = s.personRepository.DeletePerson(id, sk)
+	err = s.personRepository.DeletePerson(ctx, id, sk)
 	if err != nil {
 		return err
 	}
 
 	p := domain.NewPerson(id,sk, "", "")
 	// Stream delete person
-	err = s.personNotification.PutEvent(*p, eventTypeDeleted)
+	err = s.personNotification.PutEvent(ctx, *p, eventTypeDeleted)
 	if err != nil {
 		return err
 	}
@@ -61,20 +61,20 @@ func (s *PersonService) DeletePerson(id string, sk string) (error) {
 	return nil
 }
 
-func (s *PersonService) UpdatePerson(person domain.Person) (*domain.Person, error) {
+func (s *PersonService) UpdatePerson(ctx context.Context, person domain.Person) (*domain.Person, error) {
 	childLogger.Debug().Msg("UpdatePerson")
 
 	// Setting the keys
 	person.ID = "PERSON-" + person.ID
 	person.SK = person.ID
 
-	p, err := s.personRepository.AddPerson(person)
+	p, err := s.personRepository.AddPerson(ctx, person)
 	if err != nil {
 		return nil, err
 	}
 
 	// Stream update person
-	err = s.personNotification.PutEvent(*p, eventTypeUpdated)
+	err = s.personNotification.PutEvent(ctx, *p, eventTypeUpdated)
 	if err != nil {
 		return nil, err
 	}
@@ -82,13 +82,13 @@ func (s *PersonService) UpdatePerson(person domain.Person) (*domain.Person, erro
 	return p, nil
 }
 
-func (s *PersonService) GetPerson(id string) (*domain.Person, error) {
+func (s *PersonService) GetPerson(ctx context.Context, id string) (*domain.Person, error) {
 	childLogger.Debug().Msg("GetPerson")
 
 	// Setting the keys
 	id = "PERSON-" + id
 
-	p, err := s.personRepository.GetPerson(id)
+	p, err := s.personRepository.GetPerson(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -97,10 +97,10 @@ func (s *PersonService) GetPerson(id string) (*domain.Person, error) {
 	return p, nil
 }
 
-func (s *PersonService) ListPerson() (*[]domain.Person, error) {
+func (s *PersonService) ListPerson(ctx context.Context) (*[]domain.Person, error) {
 	childLogger.Debug().Msg("ListPerson")
 
-	p, err := s.personRepository.ListPerson()
+	p, err := s.personRepository.ListPerson(ctx)
 	if err != nil {
 		return nil, err
 	}

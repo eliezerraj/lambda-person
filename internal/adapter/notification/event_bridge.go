@@ -3,6 +3,7 @@ package notification
 import (
 	"os"
 	"encoding/json"
+	"context"
 
 	"github.com/rs/zerolog/log"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -12,6 +13,7 @@ import (
 	"lambda-person/internal/erro"
 	"lambda-person/internal/core/domain"
 
+	"github.com/aws/aws-xray-sdk-go/xray"
 )
 
 var childLogger = log.With().Str("notification", "eventBridge").Logger()
@@ -29,18 +31,23 @@ func NewPersonNotification(eventSource string, eventBusName string ) (*PersonNot
     awsSession, err := session.NewSession(&aws.Config{
         Region: aws.String(region)},
     )
+
 	if err != nil {
 		childLogger.Error().Err(err).Msg("error message") 
 		return nil, erro.ErrCreateSession
 	}
+
+	client := eventbridge.New(awsSession)
+	xray.AWS(client.Client)
+
 	return &PersonNotification{
-		client: eventbridge.New(awsSession),
+		client: client,
 		eventSource: eventSource,
 		eventBusName: eventBusName,
 	}, nil
 }
 
-func (n *PersonNotification) PutEvent(person domain.Person, eventType string) error {
+func (n *PersonNotification) PutEvent(ctx context.Context,person domain.Person, eventType string) error {
 	childLogger.Debug().Msg("PutEvent")
 
 	payload, err := json.Marshal(person)
@@ -56,7 +63,7 @@ func (n *PersonNotification) PutEvent(person domain.Person, eventType string) er
 		Detail:       aws.String(string(payload)),
 	}}
 
-	_, err = n.client.PutEvents(&eventbridge.PutEventsInput{Entries: entries})
+	_, err = n.client.PutEventsWithContext(ctx, &eventbridge.PutEventsInput{Entries: entries})
 	if err != nil {
 		childLogger.Error().Err(err).Msg("error message") 
 		return erro.ErrPutEvent

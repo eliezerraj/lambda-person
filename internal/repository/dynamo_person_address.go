@@ -1,6 +1,7 @@
 package repository
 
 import(
+	"context"
 	"lambda-person/internal/core/domain"
 	"lambda-person/internal/erro"
 	"fmt"
@@ -16,7 +17,7 @@ type PersonAddressRecord struct {
     Address domain.Address  `json:"address,omitempty"`
 }
 
-func (r *PersonRepository) AddPersonAddress(personAddress domain.PersonAddress) (*domain.PersonAddress, error){
+func (r *PersonRepository) AddPersonAddress(ctx context.Context,personAddress domain.PersonAddress) (*domain.PersonAddress, error){
 	childLogger.Debug().Msg("AddPersonAddress")
 	//log.Printf("- repository.AddPersonAddress - adresses : ", adresses)
 
@@ -49,7 +50,7 @@ func (r *PersonRepository) AddPersonAddress(personAddress domain.PersonAddress) 
 			return nil, erro.ErrInsert
 		}
 	
-		_, err = r.client.TransactWriteItems(transaction)
+		_, err = r.client.TransactWriteItemsWithContext(ctx, transaction)
 		if err != nil {
 			childLogger.Error().Err(err).Msg("error message")
 			return nil, erro.ErrInsert
@@ -59,14 +60,14 @@ func (r *PersonRepository) AddPersonAddress(personAddress domain.PersonAddress) 
 	return &personAddress , nil
 }
 
-func (r *PersonRepository) ListPersonAddress() (*[]domain.PersonAddress, error){
+func (r *PersonRepository) ListPersonAddress(ctx context.Context) (*[]domain.PersonAddress, error){
 	childLogger.Debug().Msg("ListPersonAddress")
 
 	key := &dynamodb.ScanInput{
 		TableName:	r.tableName,
 	}
 
-	result, err := r.client.Scan(key)
+	result, err := r.client.ScanWithContext(ctx, key)
 	if err != nil {
 		childLogger.Error().Err(err).Msg("error message")
 		return nil, erro.ErrList
@@ -89,7 +90,7 @@ func (r *PersonRepository) ListPersonAddress() (*[]domain.PersonAddress, error){
 	}
 }
 
-func (r *PersonRepository) QueryPersonAddress(id string) (*domain.PersonAddress, error){
+func (r *PersonRepository) QueryPersonAddress(ctx context.Context,id string) (*domain.PersonAddress, error){
 	childLogger.Debug().Msg("QueryPersonAddress")
 
 	var keyCond expression.KeyConditionBuilder
@@ -114,7 +115,7 @@ func (r *PersonRepository) QueryPersonAddress(id string) (*domain.PersonAddress,
 		KeyConditionExpression:    expr.KeyCondition(),
 	}
 
-	result, err := r.client.Query(key)
+	result, err := r.client.QueryWithContext(ctx, key)
 	if err != nil {
 		childLogger.Error().Err(err).Msg("error message")
 		return nil, erro.ErrList

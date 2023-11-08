@@ -2,7 +2,7 @@ package services
 
 import(
 	"github.com/rs/zerolog/log"
-
+	
 	"lambda-person/internal/repository"
 	"lambda-person/internal/adapter/notification"
 
@@ -12,7 +12,7 @@ var childLogger = log.With().Str("service", "PersonService").Logger()
 
 type PersonService struct {
 	personRepository 	repository.PersonRepository
-	personNotification 	notification.PersonNotification
+	personNotification 	notification.PersonNotification	
 }
 
 func NewPersonService(	personRepository repository.PersonRepository, 
